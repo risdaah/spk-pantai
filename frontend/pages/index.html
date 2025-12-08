@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPK Destinasi Pantai Jawa</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Sistem Pendukung Keputusan</h1>
+            <h2>Pemilihan Destinasi Pantai di Pulau Jawa</h2>
+            <p>Metode: AHP (Analytical Hierarchy Process) + SAW (Simple Additive Weighting)</p>
+        </header>
+
+        <main>
+            <!-- Step 1: Info Kriteria -->
+            <section class="card" id="kriteriaSection">
+                <h3>Kriteria Penilaian</h3>
+                <div id="kriteriaList" class="loading">Memuat kriteria...</div>
+            </section>
+
+            <!-- Step 2: Input Tingkat Kepentingan -->
+            <section class="card" id="ratingSection">
+                <h3>Tentukan Tingkat Kepentingan Kriteria</h3>
+                <p class="info">
+                    Berikan nilai kepentingan untuk setiap kriteria menggunakan skala AHP (1-9):
+                </p>
+                <ul class="scale-info">
+                    <li><strong>1</strong> = Tidak penting</li>
+                    <li><strong>3</strong> = Cukup penting</li>
+                    <li><strong>5</strong> = Penting</li>
+                    <li><strong>7</strong> = Sangat penting</li>
+                    <li><strong>9</strong> = Mutlak sangat penting</li>
+                    <li><em>Nilai 2, 4, 6, 8 = Nilai antara</em></li>
+                </ul>
+                <p class="warning">
+                    <strong>Catatan:</strong> Sistem akan otomatis membandingkan kriteria berdasarkan rating Anda dan
+                    menghitung bobot dengan metode AHP.
+                </p>
+
+                <div id="ratingForm"></div>
+
+                <button id="hitungBtn" class="btn-primary" onclick="hitungRanking()">Hitung Ranking</button>
+            </section>
+
+            <!-- Step 3: Hasil -->
+            <section class="card" id="hasilSection" style="display: none;">
+                <h3>🏆 Top 5 Destinasi Pantai Terbaik</h3>
+
+                <button class="btn-secondary" onclick="showAHPDetail()">Lihat Detail Perhitungan AHP</button>
+
+                <!-- Info AHP -->
+                <div id="ahpInfo" class="subsection"></div>
+
+                <!-- Bobot -->
+                <div class="subsection">
+                    <h4>Bobot Kriteria (Hasil AHP)</h4>
+                    <div id="bobotKriteria"></div>
+                </div>
+
+                <!-- Tabel Ranking -->
+                <div class="subsection">
+                    <h4>Ranking Pantai (Hasil SAW)</h4>
+                    <div class="table-responsive">
+                        <table id="rankingTable">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Nama Pantai</th>
+                                    <th>Provinsi</th>
+                                    <th>Skor Akhir</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rankingBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <button class="btn-secondary" onclick="resetForm()">🔄 Hitung Ulang</button>
+            </section>
+
+            <!-- Detail Modal -->
+            <div id="detailModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal()">&times;</span>
+                    <h3 id="modalTitle"></h3>
+                    <div id="modalBody"></div>
+                </div>
+            </div>
+
+            <div id="ahpModal" class="modal">
+                <div class="modal-content" style="max-width:900px">
+                    <span class="close" onclick="closeAHPModal()">&times;</span>
+                    <h3>Detail Perhitungan AHP</h3>
+                    <div id="ahpDetailBody"></div>
+                </div>
+            </div>
+
+        </main>
+
+        <footer>
+            <p>© 2025 Kelompok 12</p>
+        </footer>
+    </div>
+
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/spk.js"></script>
+</body>
+
+</html>
