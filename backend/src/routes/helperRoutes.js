@@ -21,14 +21,20 @@ router.get('/kriteria', async (req, res) => {
   }
 });
 
-// Get sub kriteria by kriteria ID
-router.get('/sub-kriteria/:id_kriteria', async (req, res) => {
+// PENTING: Route dengan parameter /:id harus SETELAH route tanpa parameter
+
+// Get all sub kriteria (HARUS SEBELUM /:id_kriteria)
+router.get('/sub-kriteria', async (req, res) => {
   try {
-    const { id_kriteria } = req.params;
-    const [rows] = await db.execute(
-      'SELECT * FROM sub_kriteria WHERE id_kriteria = ? ORDER BY urutan',
-      [id_kriteria]
-    );
+    const [rows] = await db.execute(`
+      SELECT 
+        sk.*,
+        k.nama_kriteria,
+        k.tipe_penilaian
+      FROM sub_kriteria sk
+      JOIN kriteria k ON sk.id_kriteria = k.id_kriteria
+      ORDER BY sk.id_kriteria, sk.urutan
+    `);
     res.status(200).json({
       success: true,
       message: 'Data sub kriteria berhasil diambil',
@@ -43,18 +49,14 @@ router.get('/sub-kriteria/:id_kriteria', async (req, res) => {
   }
 });
 
-// Get all sub kriteria
-router.get('/sub-kriteria', async (req, res) => {
+// Get sub kriteria by kriteria ID (HARUS SETELAH /sub-kriteria tanpa param)
+router.get('/sub-kriteria/:id_kriteria', async (req, res) => {
   try {
-    const [rows] = await db.execute(`
-      SELECT 
-        sk.*,
-        k.nama_kriteria,
-        k.tipe_penilaian
-      FROM sub_kriteria sk
-      JOIN kriteria k ON sk.id_kriteria = k.id_kriteria
-      ORDER BY sk.id_kriteria, sk.urutan
-    `);
+    const { id_kriteria } = req.params;
+    const [rows] = await db.execute(
+      'SELECT * FROM sub_kriteria WHERE id_kriteria = ? ORDER BY urutan',
+      [id_kriteria]
+    );
     res.status(200).json({
       success: true,
       message: 'Data sub kriteria berhasil diambil',
