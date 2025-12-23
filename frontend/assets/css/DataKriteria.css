@@ -25,6 +25,16 @@ td.kriteria-text {
     min-width: 150px;
 }
 
+/* List sub-kriteria */
+ul.subkriteria-list {
+    padding-left: 1.2rem;
+    margin-bottom: 0;
+}
+
+ul.subkriteria-list li {
+    font-size: 0.85rem;
+}
+
 /* Small screen tweak */
 @media (max-width: 768px) {
     .table-responsive {

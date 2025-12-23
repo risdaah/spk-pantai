@@ -1,263 +1,445 @@
-// DataPantai.js
+// DataPantai.js - VERSI LENGKAP & FIXED
 
-// Endpoint utama
-const API_SUMMARY_URL = 'http://localhost:5000/api/spk/detail-pantai/summary';
-const API_TAMBAH_PANTAI_URL = 'http://localhost:5000/api/spk/pantai/with-detail';
-// Endpoint helper subkriteria (sesuaikan dengan helperRoutes kamu)
-const API_SUBKRITERIA_URL = 'http://localhost:5000/api/spk/data/sub-kriteria';
+// ===== KONFIGURASI API =====
+const API_BASE = 'http://localhost:5000/api/spk';
+const API_SUMMARY_URL = `${API_BASE}/detail-pantai/summary`;
+const API_PANTAI_URL = `${API_BASE}/pantai`;
+const API_TAMBAH_PANTAI_URL = `${API_BASE}/pantai/with-detail`;
+const API_DELETE_PANTAI_URL = `${API_BASE}/pantai`;
+const API_SUBKRITERIA_URL = `${API_BASE}/data/sub-kriteria`;
 
-// ------- TABEL RINGKASAN -------
+// Data global
+let fasilitasOptions = [];
+let kondisiJalanOptions = [];
+let allPantaiData = [];
 
+// Variable untuk tracking mode edit
+let isEditMode = false;
+let currentEditId = null;
+
+// ===== INIT: Load saat halaman dimuat =====
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('✅ Page loaded!');
+  loadData();
+  loadFasilitasOptions();
+  loadKondisiJalanOptions();
+});
+
+// ===== LOAD DATA PANTAI =====
+async function loadData() {
+  console.log('📥 Loading data from:', API_SUMMARY_URL);
+  
+  try {
+    const response = await fetch(API_SUMMARY_URL);
+    console.log('Response status:', response.status);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    console.log('API result:', result);
+    
+    if (result.success && result.data) {
+      allPantaiData = result.data;
+      console.log(`✅ Loaded ${result.data.length} pantai`);
+      renderTable(result.data);
+    } else {
+      console.warn('No data or error:', result);
+      showError('Tidak ada data atau terjadi kesalahan');
+    }
+  } catch (error) {
+    console.error('❌ Error loading data:', error);
+    showError('Error: ' + error.message);
+  }
+}
+
+// ===== RENDER TABLE =====
 function renderTable(pantaiList) {
+  console.log('🎨 Rendering table with', pantaiList ? pantaiList.length : 0, 'items');
+  
   const tbody = document.getElementById('tableBody');
   const totalData = document.getElementById('totalData');
-  const tableWrapper = document.getElementById('tableWrapper');
-
+  
+  if (!tbody) {
+    console.error('❌ tableBody element not found!');
+    return;
+  }
+  
   tbody.innerHTML = '';
-
+  
+  if (!pantaiList || pantaiList.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="9" class="text-center py-4">
+          <div class="text-muted">
+            <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+            <p class="mt-2">Belum ada data pantai</p>
+            <small>Klik tombol "Tambah Data Pantai" untuk menambah data baru</small>
+          </div>
+        </td>
+      </tr>
+    `;
+    if (totalData) totalData.textContent = '0';
+    return;
+  }
+  
+  if (totalData) totalData.textContent = pantaiList.length;
+  
   pantaiList.forEach((p, index) => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <th scope="row">${index + 1}</th>
-      <td>${p.provinsi}</td>
-      <td>${p.nama_pantai}</td>
-      <td class="kriteria-text">${p.HTM || '-'}</td>
-      <td class="kriteria-text">${p.RRHM || '-'}</td>
-      <td class="kriteria-text">${p.fasilitas_umum || '-'}</td>
-      <td class="kriteria-text">${p.kondisi_jalan || '-'}</td>
-      <td class="kriteria-text">${p.RGM != null ? p.RGM : '-'}</td>
+      <td class="text-center">${index + 1}</td>
+      <td><strong>${p.nama_pantai || '-'}</strong></td>
+      <td>${p.provinsi || '-'}</td>
+      <td>${p.HTM || '-'}</td>
+      <td>${p.RRHM || '-'}</td>
+      <td class="text-center">${p.RGM || '-'}</td>
+      <td class="kriteria-text"><small>${p.fasilitas_umum || '-'}</small></td>
+      <td class="kriteria-text"><small>${p.kondisi_jalan || '-'}</small></td>
       <td class="text-center">
-        <div class="d-inline-flex gap-1">
-          <button class="btn btn-sm btn-warning" onclick="editRow(${p.id_pantai})">
-            <i class="bi bi-pencil"></i>
-          </button>
-          <button class="btn btn-sm btn-danger" onclick="deleteRow(${p.id_pantai})">
-            <i class="bi bi-trash"></i>
-          </button>
-        </div>
+        <button class="btn btn-sm btn-warning me-1" onclick="editPantai(${p.id_pantai})" title="Edit">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <button class="btn btn-sm btn-danger" onclick="deletePantai(${p.id_pantai}, '${escapeQuotes(p.nama_pantai)}')" title="Hapus">
+          <i class="bi bi-trash"></i>
+        </button>
       </td>
     `;
-
     tbody.appendChild(tr);
   });
-
-  totalData.textContent = `Total pantai: ${pantaiList.length}`;
-  totalData.classList.remove('d-none');
-  tableWrapper.classList.remove('d-none');
+  
+  console.log('✅ Table rendered successfully');
 }
 
-function showLoading(show) {
-  const loading = document.getElementById('loading');
-  if (show) loading.classList.remove('d-none');
-  else loading.classList.add('d-none');
-}
-
+// ===== SHOW ERROR =====
 function showError(message) {
-  const errorDiv = document.getElementById('error');
-  errorDiv.textContent = message;
-  errorDiv.classList.remove('d-none');
+  const tbody = document.getElementById('tableBody');
+  if (!tbody) return;
+  
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="9" class="text-center py-4 text-danger">
+        <i class="bi bi-exclamation-triangle" style="font-size: 2rem;"></i>
+        <p class="mt-2">${message}</p>
+        <small>Pastikan server backend berjalan di http://localhost:5000</small>
+      </td>
+    </tr>
+  `;
 }
 
-async function loadDataPantai() {
-  showLoading(true);
-  document.getElementById('error').classList.add('d-none');
-  document.getElementById('tableWrapper').classList.add('d-none');
+// ===== ESCAPE QUOTES =====
+function escapeQuotes(str) {
+  if (!str) return '';
+  return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
 
+// ===== EDIT PANTAI (FUNGSI LENGKAP) =====
+async function editPantai(id) {
+  console.log('✏️ Edit pantai ID:', id);
+  
   try {
-    const res = await fetch(API_SUMMARY_URL);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-    const json = await res.json();
-
-    if (!json.success || !json.data) {
-      throw new Error(json.message || 'Format data tidak sesuai');
+    const url = `${API_PANTAI_URL}/${id}`;
+    console.log('Fetching from:', url);
+    
+    const response = await fetch(url);
+    console.log('Response status:', response.status);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
     }
-
-    let pantaiList = json.data;
-    // Backend kamu saat ini mengirim [ [ {...}, {...} ] ]
-    if (Array.isArray(pantaiList) && Array.isArray(pantaiList[0])) {
-      pantaiList = pantaiList[0];
+    
+    const result = await response.json();
+    console.log('Data pantai:', result);
+    
+    if (!result.success || !result.data) {
+      alert('❌ Gagal memuat data: ' + (result.message || 'Unknown error'));
+      return;
     }
-    if (!Array.isArray(pantaiList)) {
-      throw new Error('Format data tidak sesuai (bukan array)');
+    
+    const pantai = result.data;
+    
+    // Set mode edit
+    isEditMode = true;
+    currentEditId = id;
+    
+    // Ubah judul modal
+    document.getElementById('modalTitle').textContent = 'Edit Data Pantai';
+    
+    // Isi form dengan data yang ada
+    document.getElementById('namaPantai').value = pantai.nama_pantai || '';
+    document.getElementById('provinsi').value = pantai.provinsi || '';
+    
+    // Parse harga (hapus "Rp", ".", ",", dan spasi)
+    const htmValue = pantai.HTM ? parseInt(pantai.HTM.replace(/[^\d]/g, '')) : 0;
+    const rrhmValue = pantai.RRHM ? parseInt(pantai.RRHM.replace(/[^\d]/g, '')) : 0;
+    
+    console.log('Parsed HTM:', htmValue, 'RRHM:', rrhmValue);
+    
+    document.getElementById('HTM').value = htmValue || '';
+    document.getElementById('RRHM').value = rrhmValue || '';
+    document.getElementById('RGM').value = pantai.RGM || '';
+    
+    // Uncheck semua checkbox dulu
+    document.querySelectorAll('input[name="fasilitas"]').forEach(cb => cb.checked = false);
+    document.querySelectorAll('input[name="kondisi"]').forEach(cb => cb.checked = false);
+    
+    // Check fasilitas yang sesuai
+    if (pantai.KFU) {
+      const fasilitasList = pantai.KFU.split(',').map(f => f.trim());
+      console.log('Fasilitas dari DB:', fasilitasList);
+      
+      document.querySelectorAll('input[name="fasilitas"]').forEach(cb => {
+        // Cek apakah checkbox value ada di list
+        const isMatched = fasilitasList.some(f => 
+          f.toLowerCase().includes(cb.value.toLowerCase()) || 
+          cb.value.toLowerCase().includes(f.toLowerCase())
+        );
+        if (isMatched) {
+          cb.checked = true;
+          console.log('✅ Checked:', cb.value);
+        }
+      });
     }
-
-    renderTable(pantaiList);
-  } catch (err) {
-    console.error(err);
-    showError(`Gagal memuat data. ${err.message}. Cek API di ${API_SUMMARY_URL}`);
-  } finally {
-    showLoading(false);
+    
+    // Check kondisi jalan yang sesuai
+    if (pantai.KJ) {
+      const kondisiList = pantai.KJ.split(',').map(k => k.trim());
+      console.log('Kondisi jalan dari DB:', kondisiList);
+      
+      document.querySelectorAll('input[name="kondisi"]').forEach(cb => {
+        const isMatched = kondisiList.some(k => 
+          k.toLowerCase().includes(cb.value.toLowerCase()) || 
+          cb.value.toLowerCase().includes(k.toLowerCase())
+        );
+        if (isMatched) {
+          cb.checked = true;
+          console.log('✅ Checked:', cb.value);
+        }
+      });
+    }
+    
+    // Buka modal
+    const modal = new bootstrap.Modal(document.getElementById('modalPantai'));
+    modal.show();
+    
+  } catch (error) {
+    console.error('❌ Error loading pantai data:', error);
+    alert('❌ Terjadi kesalahan: ' + error.message);
   }
 }
 
-// ------- SUBKRITERIA UNTUK CHECKLIST (Kriteria 3 & 4) -------
-
-async function fetchSubkriteria(idKriteria) {
-  // gunakan path /sub-kriteria/:id_kriteria
-  const url = `${API_SUBKRITERIA_URL}/${idKriteria}`;
-  const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error(`Gagal load subkriteria kriteria ${idKriteria} (HTTP ${res.status})`);
+// ===== LOAD FASILITAS OPTIONS =====
+async function loadFasilitasOptions() {
+  try {
+    const response = await fetch(`${API_SUBKRITERIA_URL}/3`);
+    const result = await response.json();
+    
+    if (result.success && result.data) {
+      fasilitasOptions = result.data;
+      renderFasilitasCheckbox();
+      console.log('✅ Loaded', fasilitasOptions.length, 'fasilitas options');
+    }
+  } catch (error) {
+    console.error('Error loading fasilitas:', error);
   }
-  const json = await res.json();
-  if (!json.success || !Array.isArray(json.data)) {
-    throw new Error(json.message || `Format subkriteria kriteria ${idKriteria} tidak sesuai`);
-  }
-  return json.data;
 }
 
-function populateChecklist(containerEl, items, namePrefix) {
-  if (!containerEl) throw new Error('Elemen checklist tidak ditemukan di HTML');
-  containerEl.innerHTML = '';
-  items.forEach(item => {
-    const id = `${namePrefix}_${item.id_sub_kriteria}`;
+// ===== LOAD KONDISI JALAN OPTIONS =====
+async function loadKondisiJalanOptions() {
+  try {
+    const response = await fetch(`${API_SUBKRITERIA_URL}/4`);
+    const result = await response.json();
+    
+    if (result.success && result.data) {
+      kondisiJalanOptions = result.data;
+      renderKondisiJalanCheckbox();
+      console.log('✅ Loaded', kondisiJalanOptions.length, 'kondisi jalan options');
+    }
+  } catch (error) {
+    console.error('Error loading kondisi jalan:', error);
+  }
+}
+
+// ===== RENDER FASILITAS CHECKBOX =====
+function renderFasilitasCheckbox() {
+  const container = document.getElementById('fasilitasContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  if (fasilitasOptions.length === 0) {
+    container.innerHTML = '<p class="text-muted">Tidak ada data</p>';
+    return;
+  }
+  
+  fasilitasOptions.forEach(item => {
     const div = document.createElement('div');
     div.className = 'form-check';
     div.innerHTML = `
-      <input class="form-check-input" type="checkbox" value="${item.id_sub_kriteria}" id="${id}">
-      <label class="form-check-label" for="${id}">
+      <input class="form-check-input" type="checkbox" value="${item.label}" name="fasilitas" id="fas_${item.id_sub_kriteria}">
+      <label class="form-check-label" for="fas_${item.id_sub_kriteria}">
         ${item.label}
       </label>
     `;
-    containerEl.appendChild(div);
+    container.appendChild(div);
   });
 }
 
-async function loadSubkriteriaForForm() {
-  try {
-    // 3 = Fasilitas (checklist), 4 = Jalan (checklist)
-    const [fasilitasList, jalanList] = await Promise.all([
-      fetchSubkriteria(3),
-      fetchSubkriteria(4),
-    ]);
-
-    const elFasilitas = document.getElementById('checklistFasilitas');
-    const elJalan = document.getElementById('checklistJalan');
-
-    populateChecklist(elFasilitas, fasilitasList, 'fasilitas');
-    populateChecklist(elJalan, jalanList, 'jalan');
-  } catch (err) {
-    console.error(err);
-    const formError = document.getElementById('formError');
-    if (formError) {
-      formError.textContent = `Gagal memuat pilihan checklist: ${err.message}`;
-      formError.classList.remove('d-none');
-    }
+// ===== RENDER KONDISI JALAN CHECKBOX =====
+function renderKondisiJalanCheckbox() {
+  const container = document.getElementById('kondisiJalanContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  if (kondisiJalanOptions.length === 0) {
+    container.innerHTML = '<p class="text-muted">Tidak ada data</p>';
+    return;
   }
-}
-
-// ------- FORM TAMBAH PANTAI -------
-
-function getCheckedValues(containerEl) {
-  const values = [];
-  if (!containerEl) return values;
-  containerEl.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
-    values.push(parseInt(cb.value, 10));
+  
+  kondisiJalanOptions.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'form-check';
+    div.innerHTML = `
+      <input class="form-check-input" type="checkbox" value="${item.label}" name="kondisi" id="kondisi_${item.id_sub_kriteria}">
+      <label class="form-check-label" for="kondisi_${item.id_sub_kriteria}">
+        ${item.label}
+      </label>
+    `;
+    container.appendChild(div);
   });
-  return values;
 }
 
-async function handleSubmitPantai(event) {
+// ===== MODAL FUNCTIONS =====
+function openAddModal() {
+  // Reset mode
+  isEditMode = false;
+  currentEditId = null;
+  
+  document.getElementById('modalTitle').textContent = 'Tambah Data Pantai';
+  document.getElementById('pantaiForm').reset();
+  
+  // Uncheck all checkboxes
+  document.querySelectorAll('input[name="fasilitas"]').forEach(cb => cb.checked = false);
+  document.querySelectorAll('input[name="kondisi"]').forEach(cb => cb.checked = false);
+  
+  const modal = new bootstrap.Modal(document.getElementById('modalPantai'));
+  modal.show();
+}
+
+function closeModal() {
+  const modalEl = document.getElementById('modalPantai');
+  const modal = bootstrap.Modal.getInstance(modalEl);
+  if (modal) modal.hide();
+  
+  // Reset mode
+  isEditMode = false;
+  currentEditId = null;
+}
+
+// ===== SAVE DATA (Support ADD & EDIT) =====
+async function handleSave(event) {
   event.preventDefault();
-  const btn = document.getElementById('btnSimpanPantai');
-  const formError = document.getElementById('formError');
-  formError.classList.add('d-none');
-  formError.textContent = '';
-
-  const namaPantai = document.getElementById('inputNamaPantai').value.trim();
-  const provinsi = document.getElementById('inputProvinsi').value.trim();
-  const HTM = document.getElementById('inputHTM').value.trim();
-  const RRHM = document.getElementById('inputRRHM').value.trim();
-  const RGM = document.getElementById('inputRGM').value.trim();
-
-  const fasilitasIds = getCheckedValues(document.getElementById('checklistFasilitas'));
-  const jalanIds = getCheckedValues(document.getElementById('checklistJalan'));
-
-  if (!namaPantai || !provinsi || !HTM || !RRHM || !RGM) {
-    formError.textContent = 'Nama pantai, provinsi, HTM, RRHM, dan Rating wajib diisi.';
-    formError.classList.remove('d-none');
+  
+  console.log('💾 Saving data... Mode:', isEditMode ? 'EDIT' : 'ADD');
+  
+  const formData = {
+    nama_pantai: document.getElementById('namaPantai').value.trim(),
+    provinsi: document.getElementById('provinsi').value.trim(),
+    HTM: parseInt(document.getElementById('HTM').value) || 0,
+    RRHM: parseInt(document.getElementById('RRHM').value) || 0,
+    RGM: parseFloat(document.getElementById('RGM').value) || 0,
+    fasilitas_umum: Array.from(document.querySelectorAll('input[name="fasilitas"]:checked'))
+      .map(cb => cb.value),
+    kondisi_jalan: Array.from(document.querySelectorAll('input[name="kondisi"]:checked'))
+      .map(cb => cb.value)
+  };
+  
+  console.log('Form data:', formData);
+  
+  if (!formData.nama_pantai || !formData.provinsi) {
+    alert('❌ Nama pantai dan provinsi harus diisi!');
     return;
   }
 
-  const payload = {
-    namapantai: namaPantai,
-    provinsi: provinsi,
-    HTM,
-    RRHM,
-    RGM: parseFloat(RGM),
-    fasilitasUmumIds: fasilitasIds,   // kriteria 3
-    kondisiJalanIds: jalanIds         // kriteria 4
-    // jika backend butuh id_sub_kriteria untuk range, nanti bisa ditambah
-  };
-
   try {
-    btn.disabled = true;
-    btn.textContent = 'Menyimpan...';
-
-    const res = await fetch(API_TAMBAH_PANTAI_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-
-    const json = await res.json();
-    if (!res.ok || !json.success) {
-      throw new Error(json.message || `HTTP ${res.status}`);
+    let response;
+    
+    if (isEditMode && currentEditId) {
+      // MODE UPDATE
+      console.log('Updating pantai ID:', currentEditId);
+      response = await fetch(`${API_PANTAI_URL}/${currentEditId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+    } else {
+      // MODE CREATE
+      console.log('Creating new pantai');
+      response = await fetch(API_TAMBAH_PANTAI_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
     }
 
-    // Tutup modal
-    const modalEl = document.getElementById('modalTambahPantai');
-    const modal = bootstrap.Modal.getInstance(modalEl);
-    modal.hide();
-
-    // Reset form
-    event.target.reset();
-    document
-      .getElementById('checklistFasilitas')
-      .querySelectorAll('input[type="checkbox"]')
-      .forEach(cb => (cb.checked = false));
-    document
-      .getElementById('checklistJalan')
-      .querySelectorAll('input[type="checkbox"]')
-      .forEach(cb => (cb.checked = false));
-
-    // Reload tabel
-    await loadDataPantai();
-  } catch (err) {
-    console.error(err);
-    formError.textContent = `Gagal menyimpan data pantai: ${err.message}`;
-    formError.classList.remove('d-none');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Simpan';
+    const result = await response.json();
+    console.log('Save response:', result);
+    
+    if (result.success) {
+      alert(isEditMode ? '✅ Data pantai berhasil diupdate!' : '✅ Data pantai berhasil ditambahkan!');
+      closeModal();
+      loadData();
+    } else {
+      alert('❌ Error: ' + result.message);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('❌ Terjadi kesalahan: ' + error.message);
   }
 }
 
-// ------- INIT -------
-
-function initEvents() {
-  const refreshBtn = document.getElementById('refreshBtn');
-  if (refreshBtn) {
-    refreshBtn.addEventListener('click', () => {
-      loadDataPantai();
+// ===== DELETE =====
+async function deletePantai(id, nama) {
+  if (!confirm(`Hapus pantai "${nama}"?`)) return;
+  
+  try {
+    const response = await fetch(`${API_DELETE_PANTAI_URL}/${id}`, {
+      method: 'DELETE'
     });
-  }
-
-  const formTambah = document.getElementById('formTambahPantai');
-  if (formTambah) {
-    formTambah.addEventListener('submit', handleSubmitPantai);
-  }
-
-  const modalEl = document.getElementById('modalTambahPantai');
-  if (modalEl) {
-    modalEl.addEventListener('show.bs.modal', () => {
-      loadSubkriteriaForForm();
-    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      alert('✅ Data berhasil dihapus!');
+      loadData();
+    } else {
+      alert('❌ Gagal menghapus: ' + result.message);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('❌ Error: ' + error.message);
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  initEvents();
-  loadDataPantai();
-});
+// ===== SEARCH =====
+function handleSearch() {
+  const keyword = document.getElementById('searchInput').value.toLowerCase();
+  
+  if (!keyword) {
+    renderTable(allPantaiData);
+    return;
+  }
+  
+  const filtered = allPantaiData.filter(p => {
+    return (
+      (p.nama_pantai && p.nama_pantai.toLowerCase().includes(keyword)) ||
+      (p.provinsi && p.provinsi.toLowerCase().includes(keyword))
+    );
+  });
+  
+  renderTable(filtered);
+}
+
+console.log('✅ DataPantai.js loaded');
