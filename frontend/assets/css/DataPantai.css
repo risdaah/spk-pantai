@@ -7,22 +7,100 @@ body {
     letter-spacing: 0.5px;
 }
 
+/* HEADER TABLE - Ubah dari nowrap jadi normal biar bisa bertumpuk */
 .table thead th {
-    white-space: nowrap;
+    white-space: normal !important;
+    /* DIUBAH dari nowrap */
+    vertical-align: middle;
+    text-align: center;
+    padding: 12px 10px;
+    line-height: 1.4;
+    font-size: 0.85rem;
+    font-weight: 600;
 }
 
+/* Atur lebar kolom header biar proporsional */
+.table thead th:nth-child(1) {
+    /* No */
+    width: 50px;
+    min-width: 50px;
+}
+
+.table thead th:nth-child(2) {
+    /* Nama Pantai */
+    min-width: 120px;
+}
+
+.table thead th:nth-child(3) {
+    /* Provinsi */
+    min-width: 100px;
+}
+
+.table thead th:nth-child(4) {
+    /* Harga Tiket Masuk */
+    min-width: 100px;
+    max-width: 120px;
+}
+
+.table thead th:nth-child(5) {
+    /* Rata-Rata Harga Makanan */
+    min-width: 110px;
+    max-width: 130px;
+}
+
+.table thead th:nth-child(6) {
+    /* Ketersediaan Fasilitas Umum */
+    min-width: 140px;
+    max-width: 200px;
+}
+
+.table thead th:nth-child(7) {
+    /* Kondisi Jalan */
+    min-width: 120px;
+    max-width: 180px;
+}
+
+.table thead th:nth-child(8) {
+    /* Rating Google Maps */
+    min-width: 100px;
+    max-width: 120px;
+}
+
+.table thead th:nth-child(9) {
+    /* Aksi */
+    width: 110px;
+    min-width: 110px;
+}
+
+/* Table responsive container */
 .table-responsive {
     max-height: 70vh;
 }
 
+/* Body table styling */
 td,
 th {
     font-size: 0.9rem;
 }
 
+.table tbody td {
+    vertical-align: middle;
+    padding: 10px;
+}
+
 /* Supaya teks kriteria rapi */
 td.kriteria-text {
     min-width: 150px;
+    max-width: 200px;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+/* Kolom dengan text panjang (Fasilitas & Kondisi Jalan) */
+.table tbody td:nth-child(6),
+.table tbody td:nth-child(7) {
+    font-size: 0.82rem;
+    line-height: 1.4;
 }
 
 /* Small screen tweak */
@@ -34,5 +112,16 @@ td.kriteria-text {
     td,
     th {
         font-size: 0.8rem;
+    }
+
+    .table thead th {
+        font-size: 0.75rem;
+        padding: 10px 6px;
+        line-height: 1.3;
+    }
+
+    .table tbody td {
+        font-size: 0.78rem;
+        padding: 8px 6px;
     }
 }

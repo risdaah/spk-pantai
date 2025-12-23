@@ -1,7 +1,9 @@
 // controllers/detailPantaiController.js
+
 const DetailPantaiModel = require('../models/detailPantaiModel');
 
 class DetailPantaiController {
+  
   // Get all detail pantai
   static async index(req, res) {
     try {
@@ -25,7 +27,7 @@ class DetailPantaiController {
     try {
       const { id_pantai } = req.params;
       const details = await DetailPantaiModel.getByPantaiId(id_pantai);
-
+      
       res.status(200).json({
         success: true,
         message: 'Data detail pantai berhasil diambil',
@@ -45,7 +47,7 @@ class DetailPantaiController {
     try {
       const { id } = req.params;
       const detail = await DetailPantaiModel.getById(id);
-
+      
       if (!detail) {
         return res.status(404).json({
           success: false,
@@ -67,87 +69,37 @@ class DetailPantaiController {
     }
   }
 
-  // Create detail pantai (bisa multiple sub_kriteria untuk checklist)
+  // Create detail pantai
   static async store(req, res) {
     try {
       const { id_pantai, id_kriteria, id_sub_kriteria } = req.body;
-
+      
       // Validasi input
       if (!id_pantai || !id_kriteria || !id_sub_kriteria) {
         return res.status(400).json({
           success: false,
-          message: 'id_pantai, id_kriteria, dan id_sub_kriteria harus diisi'
+          message: 'Semua field harus diisi'
         });
       }
 
-      // Get kriteria info untuk tahu tipe penilaian
-      const kriteria = await DetailPantaiModel.getKriteriaInfo(id_kriteria);
-      
-      if (!kriteria) {
-        return res.status(404).json({
-          success: false,
-          message: 'Kriteria tidak ditemukan'
-        });
-      }
+      const result = await DetailPantaiModel.create({
+        id_pantai,
+        id_kriteria,
+        id_sub_kriteria
+      });
 
-      let insertedIds = [];
-
-      // Jika tipe range, hanya boleh satu nilai
-      if (kriteria.tipe_penilaian === 'range') {
-        // Hapus data lama jika ada
-        await DetailPantaiModel.deleteByPantaiKriteria(id_pantai, id_kriteria);
-
-        // Insert data baru
-        const result = await DetailPantaiModel.create({
-          id_pantai,
-          id_kriteria,
-          id_sub_kriteria
-        });
-        insertedIds.push(result.insertId);
-
-        // Get sub kriteria info untuk ambil nilai_skor
-        const subKriteria = await DetailPantaiModel.getSubKriteriaInfo(id_sub_kriteria);
-        
-        // Update skor pantai
-        await DetailPantaiModel.upsertSkorPantai(
-          id_pantai,
-          id_kriteria,
-          subKriteria.nilai_skor
-        );
-      } else {
-        // Tipe checklist, bisa multiple
-        // id_sub_kriteria bisa array atau single value
-        const subKriteriaArray = Array.isArray(id_sub_kriteria) 
-          ? id_sub_kriteria 
-          : [id_sub_kriteria];
-
-        // Hapus data lama
-        await DetailPantaiModel.deleteByPantaiKriteria(id_pantai, id_kriteria);
-
-        // Insert multiple data
-        for (const subKritId of subKriteriaArray) {
-          const result = await DetailPantaiModel.create({
-            id_pantai,
-            id_kriteria,
-            id_sub_kriteria: subKritId
-          });
-          insertedIds.push(result.insertId);
-        }
-
-        // Hitung skor (jumlah checklist yang dipilih)
-        const score = await DetailPantaiModel.calculateScore(id_pantai, id_kriteria);
-        
-        // Update skor pantai
-        await DetailPantaiModel.upsertSkorPantai(id_pantai, id_kriteria, score);
-      }
+      // Hitung dan update skor
+      const score = await DetailPantaiModel.calculateScore(id_pantai, id_kriteria);
+      await DetailPantaiModel.upsertSkorPantai(id_pantai, id_kriteria, score);
 
       res.status(201).json({
         success: true,
-        message: 'Data detail pantai berhasil ditambahkan dan skor diperbarui',
+        message: 'Data detail pantai berhasil ditambahkan',
         data: {
-          inserted_ids: insertedIds,
+          id_detail: result.insertId,
           id_pantai,
-          id_kriteria
+          id_kriteria,
+          id_sub_kriteria
         }
       });
     } catch (error) {
@@ -164,12 +116,12 @@ class DetailPantaiController {
     try {
       const { id } = req.params;
       const { id_pantai, id_kriteria, id_sub_kriteria } = req.body;
-
+      
       // Validasi input
       if (!id_pantai || !id_kriteria || !id_sub_kriteria) {
         return res.status(400).json({
           success: false,
-          message: 'id_pantai, id_kriteria, dan id_sub_kriteria harus diisi'
+          message: 'Semua field harus diisi'
         });
       }
 
@@ -182,7 +134,6 @@ class DetailPantaiController {
         });
       }
 
-      // Update detail
       await DetailPantaiModel.update(id, {
         id_pantai,
         id_kriteria,
@@ -195,7 +146,7 @@ class DetailPantaiController {
 
       res.status(200).json({
         success: true,
-        message: 'Data detail pantai berhasil diperbarui dan skor diperbarui',
+        message: 'Data detail pantai berhasil diperbarui',
         data: {
           id_detail: id,
           id_pantai,
@@ -216,8 +167,8 @@ class DetailPantaiController {
   static async destroy(req, res) {
     try {
       const { id } = req.params;
-
-      // Get detail info sebelum dihapus
+      
+      // Check if detail exists
       const existingDetail = await DetailPantaiModel.getById(id);
       if (!existingDetail) {
         return res.status(404).json({
@@ -226,24 +177,17 @@ class DetailPantaiController {
         });
       }
 
-      // Delete detail
+      const { id_pantai, id_kriteria } = existingDetail;
+
       await DetailPantaiModel.delete(id);
 
-      // Recalculate score
-      const score = await DetailPantaiModel.calculateScore(
-        existingDetail.id_pantai,
-        existingDetail.id_kriteria
-      );
-      
-      await DetailPantaiModel.upsertSkorPantai(
-        existingDetail.id_pantai,
-        existingDetail.id_kriteria,
-        score
-      );
+      // Recalculate score after deletion
+      const score = await DetailPantaiModel.calculateScore(id_pantai, id_kriteria);
+      await DetailPantaiModel.upsertSkorPantai(id_pantai, id_kriteria, score);
 
       res.status(200).json({
         success: true,
-        message: 'Data detail pantai berhasil dihapus dan skor diperbarui'
+        message: 'Data detail pantai berhasil dihapus'
       });
     } catch (error) {
       res.status(500).json({
@@ -259,7 +203,7 @@ class DetailPantaiController {
     try {
       const { id_pantai } = req.params;
       const skor = await DetailPantaiModel.getSkorPantai(id_pantai);
-
+      
       res.status(200).json({
         success: true,
         message: 'Data skor pantai berhasil diambil',
@@ -274,24 +218,24 @@ class DetailPantaiController {
     }
   }
 
-  // Ringkasan pantai: HTM, RRHM, RGM dari pantai, KFU & KJ dari detail
-static async getSummary(req, res) {
-  try {
-    const data = await DetailPantaiModel.getPantaiWithDetailSummary();
-    return res.status(200).json({
-      success: true,
-      message: 'Data ringkasan pantai berhasil diambil',
-      data,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: 'Terjadi kesalahan saat mengambil ringkasan pantai',
-      error: error.message,
-    });
+  // Get summary (ringkasan semua pantai dengan detail)
+  static async getSummary(req, res) {
+    try {
+      const summary = await DetailPantaiModel.getPantaiWithDetailSummary();
+      
+      res.status(200).json({
+        success: true,
+        message: 'Ringkasan data pantai berhasil diambil',
+        data: summary
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Terjadi kesalahan saat mengambil ringkasan',
+        error: error.message
+      });
+    }
   }
-}
-
 }
 
 module.exports = DetailPantaiController;
