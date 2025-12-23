@@ -21,11 +21,6 @@ function renderTable(pantaiList) {
       <th scope="row">${index + 1}</th>
       <td>${p.provinsi}</td>
       <td>${p.nama_pantai}</td>
-      <td class="kriteria-text">${p.HTM || '-'}</td>
-      <td class="kriteria-text">${p.RRHM || '-'}</td>
-      <td class="kriteria-text">${p.fasilitas_umum || '-'}</td>
-      <td class="kriteria-text">${p.kondisi_jalan || '-'}</td>
-      <td class="kriteria-text">${p.RGM != null ? p.RGM : '-'}</td>
       <td class="text-center">
         <div class="d-inline-flex gap-1">
           <button class="btn btn-sm btn-warning" onclick="editRow(${p.id_pantai})">
