@@ -5,8 +5,12 @@
     <meta charset="utf-8" />
     <title>Data Kriteria SPK Pantai</title>
 
-    <!-- Bootstrap (kalau sebelumnya sudah pakai, biarkan saja) -->
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
 
     <!-- CSS custom -->
     <link rel="stylesheet" href="../assets/css/DataKriteria.css" />
@@ -38,45 +42,124 @@
     </nav>
 
     <div class="container my-4">
+        <h5 class="mb-3"><b>Kriteria & Sub-Kriteria</b></h5>
+        <p class="mb-3">Untuk kriteria RANGE akan memiliki skor penilaian, sedangkan kriteria CHECKLIST akan dinilai
+            berdasarkan seberapa banyak ketersediannya.</p>
+
         <div class="card shadow-sm">
-            <div class="card-header bg-white d-flex justify-content-between">
-                <h5 class="mb-0">Daftar Kriteria & Sub-Kriteria</h5>
+            <div class="card-header bg-white d-flex justify-content-end">
                 <span class="text-muted">
                     Total: <span id="totalKriteria">0</span> kriteria
                 </span>
             </div>
             <div class="card-body">
                 <div class="table-responsive" id="tableWrapper">
-                    <table class="table table-bordered table-hover align-middle">
-                        <thead class="table-light">
+                    <table class="table table-hover">
+                        <thead class="table-info">
                             <tr>
                                 <th style="width: 60px;">No</th>
                                 <th>Nama Kriteria</th>
                                 <th>Jenis</th>
                                 <th>Tipe Penilaian</th>
                                 <th>Sub-Kriteria</th>
+                                <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody">
-                            <!-- diisi dari DataKriteria.js -->
+                            <tr>
+                                <td colspan="6" class="text-center py-4">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2 text-muted">Memuat data...</p>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
-                </div>
-
-                <div id="loadingState" class="text-center text-muted mt-3 d-none">
-                    Memuat data kriteria...
-                </div>
-                <div id="errorState" class="text-center text-danger mt-3 d-none">
-                    Gagal memuat data.
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- JS Bootstrap (opsional) -->
+    <!-- MODAL TAMBAH/EDIT -->
+    <div class="modal fade" id="modalKriteria" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalTitle">Tambah Data Kriteria</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form id="kriteriaForm" onsubmit="handleSave(event)">
+
+                        <!-- Nama Kriteria -->
+                        <div class="mb-3">
+                            <label for="namaKriteria" class="form-label">Nama Kriteria <span
+                                    class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="namaKriteria"
+                                placeholder="Contoh: Harga Tiket Masuk" required />
+                        </div>
+
+                        <!-- Jenis & Tipe -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="jenisKriteria" class="form-label">Jenis Kriteria <span
+                                        class="text-danger">*</span></label>
+                                <select class="form-select" id="jenisKriteria" required>
+                                    <option value="" selected disabled>-- Pilih Jenis --</option>
+                                    <option value="benefit">Benefit (Semakin tinggi semakin baik)</option>
+                                    <option value="cost">Cost (Semakin rendah semakin baik)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="tipePenilaian" class="form-label">Tipe Penilaian <span
+                                        class="text-danger">*</span></label>
+                                <select class="form-select" id="tipePenilaian" required onchange="handleTipeChange()">
+                                    <option value="" selected disabled>-- Pilih Tipe --</option>
+                                    <option value="range">Range (Rentang nilai)</option>
+                                    <option value="checklist">Checklist (Ya/Tidak)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Sub-Kriteria Section -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="form-label mb-0">Sub-Kriteria</label>
+                                <button type="button" class="btn btn-sm btn-success" onclick="addSubKriteria()">
+                                    <i class="bi bi-plus-circle"></i> Tambah Sub-Kriteria
+                                </button>
+                            </div>
+                            <div id="subKriteriaContainer" class="border rounded p-3">
+                                <p class="text-muted text-center">Pilih tipe penilaian terlebih dahulu</p>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-1"></i> Simpan
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- JS custom -->
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Custom JS -->
     <script src="../assets/js/DataKriteria.js"></script>
 </body>
 

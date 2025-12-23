@@ -153,7 +153,11 @@ async function editPantai(id) {
     console.log('Data pantai:', result);
     
     if (!result.success || !result.data) {
-      alert('❌ Gagal memuat data: ' + (result.message || 'Unknown error'));
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal Memuat Data',
+        text: result.message || 'Unknown error'
+      });
       return;
     }
     
@@ -225,7 +229,11 @@ async function editPantai(id) {
     
   } catch (error) {
     console.error('❌ Error loading pantai data:', error);
-    alert('❌ Terjadi kesalahan: ' + error.message);
+    Swal.fire({
+      icon: 'error',
+      title: 'Terjadi Kesalahan',
+      text: error.message
+    });
   }
 }
 
@@ -359,7 +367,11 @@ async function handleSave(event) {
   console.log('Form data:', formData);
   
   if (!formData.nama_pantai || !formData.provinsi) {
-    alert('❌ Nama pantai dan provinsi harus diisi!');
+    Swal.fire({
+      icon: 'warning',
+      title: 'Validasi Gagal',
+      text: 'Nama pantai dan provinsi harus diisi!'
+    });
     return;
   }
 
@@ -388,38 +400,73 @@ async function handleSave(event) {
     console.log('Save response:', result);
     
     if (result.success) {
-      alert(isEditMode ? '✅ Data pantai berhasil diupdate!' : '✅ Data pantai berhasil ditambahkan!');
+      Swal.fire({
+        icon: 'success',
+        title: isEditMode ? 'Data Berhasil Diupdate' : 'Data Berhasil Ditambahkan',
+        text: isEditMode ? 'Data pantai telah berhasil diupdate!' : 'Data pantai telah berhasil ditambahkan!'
+      });
       closeModal();
       loadData();
     } else {
-      alert('❌ Error: ' + result.message);
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal Menyimpan Data',
+        text: result.message
+      });
     }
   } catch (error) {
     console.error('Error:', error);
-    alert('❌ Terjadi kesalahan: ' + error.message);
+    Swal.fire({
+      icon: 'error',
+      title: 'Terjadi Kesalahan',
+      text: error.message
+    });
   }
 }
 
 // ===== DELETE =====
 async function deletePantai(id, nama) {
-  if (!confirm(`Hapus pantai "${nama}"?`)) return;
-  
+  const result = await Swal.fire({
+    title: 'Konfirmasi Hapus',
+    text: `Apakah Anda yakin ingin menghapus pantai "${nama}"?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Ya, Hapus!',
+    cancelButtonText: 'Batal'
+  });
+
+  if (!result.isConfirmed) return;
+
   try {
     const response = await fetch(`${API_DELETE_PANTAI_URL}/${id}`, {
       method: 'DELETE'
     });
-    
-    const result = await response.json();
-    
-    if (result.success) {
-      alert('✅ Data berhasil dihapus!');
+
+    const responseResult = await response.json();
+
+    if (responseResult.success) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Data Berhasil Dihapus',
+        text: 'Data pantai telah berhasil dihapus!'
+      });
       loadData();
     } else {
-      alert('❌ Gagal menghapus: ' + result.message);
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal Menghapus Data',
+        text: responseResult.message
+      });
     }
   } catch (error) {
     console.error('Error:', error);
-    alert('❌ Error: ' + error.message);
+    Swal.fire({
+      icon: 'error',
+      title: 'Terjadi Kesalahan',
+      text: error.message
+    });
   }
 }
 
