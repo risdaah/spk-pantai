@@ -40,20 +40,24 @@
             </div>
         </div>
     </nav>
-
-    <div class="container my-4">
-        <h5 class="mb-3"><b>Kriteria & Sub-Kriteria</b></h5>
-        <p class="mb-3">Untuk kriteria RANGE akan memiliki skor penilaian, sedangkan kriteria CHECKLIST akan dinilai
-            berdasarkan seberapa banyak ketersediannya.</p>
-
-        <div class="card shadow-sm">
-            <div class="card-header bg-white d-flex justify-content-end">
-                <span class="text-muted">
-                    Total: <span id="totalKriteria">0</span> kriteria
-                </span>
+    
+    <!-- Main Container -->
+        <div class="container-fluid px-4">
+            <div class="px-1 pt-2">
+                <h2 class="mb-3"><b>Kriteria & Sub-Kriteria</b></h2>
+                <p class="mb-3">Untuk kriteria RANGE akan memiliki skor penilaian, sedangkan kriteria CHECKLIST akan dinilai
+                    berdasarkan seberapa banyak ketersediannya.</p>
+            </div>  
+            <!-- Toolbar -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="mr-2">
+                        Total: <span id="totalKriteria">0</span> kriteria
+                    </span>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="table-responsive" id="tableWrapper">
+
+            <div class="table-responsive" id="tableWrapper">
                     <table class="table table-hover">
                         <thead class="table-info">
                             <tr>
@@ -77,9 +81,7 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
         </div>
-    </div>
 
     <!-- MODAL TAMBAH/EDIT -->
     <div class="modal fade" id="modalKriteria" tabindex="-1" aria-hidden="true">
