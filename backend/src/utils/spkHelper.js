@@ -279,28 +279,31 @@ class SPKHelper {
     return results;
   }
 
-  static formatResults(results, criteriaNames, topN = null) {
-    const formatted = results.map(result => ({
-      id_pantai: result.id_pantai,
-      nama_pantai: result.nama_pantai,
-      provinsi: result.provinsi,
-      rank: result.rank,
-      finalScore: this.round3(result.finalScore),
-      criteriaValues: result.criteriaValues,
-      normalizedValues: result.normalizedValues.map(v => this.round3(v)),
-      details: criteriaNames.map((name, idx) => ({
-        kriteria: name,
-        nilaiAsli: result.criteriaValues[idx],
-        nilaiNormalisasi: this.round3(result.normalizedValues[idx])
-      }))
-    }));
 
-    if (topN && topN > 0) {
-      return formatted.slice(0, topN);
-    }
-
-    return formatted;
+static formatResults(results, criteriaNames, topN = null) {
+  const formatted = results.map(result => ({
+    id_pantai: result.id_pantai,
+    nama_pantai: result.nama_pantai,
+    provinsi: result.provinsi,
+    rank: result.rank,
+    finalScore: this.round3(result.finalScore),
+    criteriaValues: result.criteriaValues,
+    normalizedValues: result.normalizedValues.map(v => this.round3(v)),
+    details: criteriaNames.map((name, idx) => ({
+      kriteria: name,
+      nilaiAsli: result.criteriaValues[idx],
+      nilaiNormalisasi: this.round3(result.normalizedValues[idx])
+    }))
+  }));
+  
+  // ✅ PASTIKAN BAGIAN INI BENAR
+  if (topN && topN > 0) {
+    return formatted.slice(0, topN);  // Ini akan return 10 data
   }
+  return formatted;  // Return semua data
+}
+
+
 }
 
 module.exports = SPKHelper;

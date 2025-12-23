@@ -164,9 +164,9 @@ class SPKController {
       const criteriaTypes = finalKriteria.map(k => k.jenis_kriteria);
       const sawResults = SPKHelper.calculateSAW(alternatives, ahpResult.weights, criteriaTypes);
 
-      // 8. Format hasil (TOP 5 only)
+      // 8. Format hasil (TOP 10 only)
       const criteriaNames = finalKriteria.map(k => k.nama_kriteria);
-      const formattedResults = SPKHelper.formatResults(sawResults, criteriaNames, 5);
+      const formattedResults = SPKHelper.formatResults(sawResults, criteriaNames, 10);
 
       // Build safe ahp object for response (avoid undefined.map errors)
       const safeAHP = {
@@ -194,7 +194,7 @@ class SPKController {
         })),
         ranking: formattedResults,
         totalAlternatif: sawResults.length,
-        topN: 5
+        topN: 10
       });
 
     } catch (error) {

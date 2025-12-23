@@ -155,6 +155,8 @@ async function hitungRanking() {
 
         const response = await API.hitungRanking(comparisons);
         console.log("BACKEND RESPONSE:", response);
+        console.log('📊 TOTAL RANKING:', response.ranking.length); // ← TAMBAH INI
+        console.log('📊 RANKING DATA:', response.ranking); // ← DAN INI
 
 
         if (!response.success) {
@@ -231,44 +233,46 @@ function displayBobotKriteria(kriteria) {
     container.innerHTML = html;
 }
 
-/* Ranking Table */
+// spk.js - UPDATE FUNCTION displayRankingTable
 
+/* === Ranking Table === */
 function displayRankingTable(ranking) {
-  const cardsContainer = document.getElementById("rankingCards");
+  const cardsContainer = document.getElementById('rankingCards');
   if (!cardsContainer) return;
-
-  let html = "";
-
-  ranking.forEach(item => {
-    const rankClass = item.rank <= 3 ? `rank-${item.rank}` : "rank-other";
-
+  
+  let html = '';
+  
+  // ✅ TAMPILKAN 10 DATA (atau semua kalau backend kirim semua)
+  const topData = ranking.slice(0, 10); // Ambil 10 teratas
+  
+  topData.forEach(item => {
+    const rankClass = item.rank <= 3 ? `rank-${item.rank}` : 'rank-other';
+    
     html += `
       <div class="rank-card">
         <div class="rank-card-header">
-          <span class="rank-badge ${rankClass}">${item.rank}</span>
+          <span class="rank-badge ${rankClass}">#${item.rank}</span>
           <div class="rank-card-title">
-            <div class="nama"><strong>${item.nama_pantai}</strong></div>
+            <div class="name"><strong>${item.nama_pantai}</strong></div>
             <div class="provinsi text-muted">${item.provinsi}</div>
           </div>
         </div>
-
         <div class="rank-card-body">
           <div class="score-row">
-            <span class="text-muted">Skor Akhir</span>
+            <span class="text-muted">Skor Akhir:</span>
             <span class="score">${item.finalScore.toFixed(4)}</span>
           </div>
-
-          <button class="btn-detail btn-secondary rounded-pill"
-                  onclick="showDetail(${item.id_pantai})">
+          <button class="btn-detail btn-secondary rounded-pill" onclick="showDetail(${item.id_pantai})">
             Detail
           </button>
         </div>
       </div>
     `;
   });
-
+  
   cardsContainer.innerHTML = html;
 }
+
 
 
 
