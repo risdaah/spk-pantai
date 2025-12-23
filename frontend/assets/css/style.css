@@ -292,14 +292,16 @@ tbody tr:hover {
 }
 
 .modal-content {
-    background-color: white;
     margin: 5% auto;
-    padding: 30px;
     border-radius: 10px;
     width: 90%;
     max-width: 700px;
     max-height: 80vh;
     overflow-y: auto;
+}
+
+.modal-body{
+    padding: 20px;
 }
 
 .close {

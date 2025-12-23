@@ -19,28 +19,30 @@
     <link rel="stylesheet" href="../assets/css/DataPantai.css" />
 </head>
 
-<body data-bs-offset="80" tabindex="0">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white">
-        <div class="container navbar">
-            <a class="navbar-brand text-decoration-none mb-0 brandd text-primary" href="index.html">
-                <img src="../assets/img/Group 15.png" alt="Logo" style="height:40px;">
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+<body data-bs-spy="scroll"
+      data-bs-target=".navbar"
+      data-bs-offset="80"
+      tabindex="0">
+        <div class="container-fluid p-0">
+            <nav class="navbar navbar-expand-lg navbar-light bg-white">
+                <div class="container-fluid navbar">
+                <a class="navbar-brand text-decoration-none mb-0 brandd text-primary" href="#">
+                    <img src="../assets/img/Group 15.png" alt="Logo" style="height:40px;">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">                    
+                    <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <a href="hitung.html" class="btn text-decoration-none rounded-pill btn-primary mx-lg-2">
-                            Kembali
+                        Kembali
                         </a>
                     </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+                    </ul>
+                </div>
+                </div>
+            </nav>
 
     <!-- Main Container -->
     <div class="container-fluid px-4">
@@ -48,24 +50,21 @@
         <!-- Toolbar -->
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-                <button class="btn btn-primary" onclick="openAddModal()">
-                    <i class="bi bi-plus-circle me-1"></i> Tambah Data Pantai
+                <button class="btn btn-success" onclick="openAddModal()">
+                    <i class="bi bi-plus me-1"></i> Tambah Data Pantai
                 </button>
             </div>
 
             <div class="d-flex align-items-center gap-2">
-                <input type="text" id="searchInput" class="form-control form-control-sm"
-                    placeholder="Cari nama pantai atau provinsi..." onkeyup="handleSearch()" style="width: 300px;" />
-                <span class="badge bg-secondary">
+                <span class="mr-2">
                     Total: <span id="totalData">0</span>
                 </span>
+                <input type="text" id="searchInput" class="form-control form-control-l"
+                    placeholder="Cari nama pantai atau provinsi..." onkeyup="handleSearch()" style="width: 300px;" />                
             </div>
         </div>
-
-        <!-- Table -->
-        <div class="card shadow-sm">
-            <div class="card-body p-0">
-                <div class="table-responsive">
+        
+        <div class="table-responsive">
                     <table class="table table-hover">
                         <thead class="table-info">
                             <tr>
@@ -92,8 +91,6 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
 
     </div>
 
@@ -150,7 +147,7 @@
                         <div class="mb-3">
                             <label class="form-label">Fasilitas Umum</label>
                             <div id="fasilitasContainer" class="border rounded p-3"
-                                style="max-height: 200px; overflow-y: auto;">
+                                style="max-height: 250px; overflow-y: auto;">
                                 <p class="text-muted">Loading...</p>
                             </div>
                         </div>

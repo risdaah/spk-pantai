@@ -337,20 +337,20 @@ function showAHPDetail() {
     const names = hasilData.kriteria.map(k => k.nama_kriteria);
     let html = "";
 
-    html += `<h5 class="fw-normal">Matriks Perbandingan Berpasangan</h4>`;
+    html += `<h5 class="fw-bold mt-3">Matriks Perbandingan Berpasangan</h4>`;
     html += `<div class="table-responsive">${generateTable(AHP_DATA.pairwiseMatrix, names)}</div>`;
 
-    html += `<h5 class="mt-5">Matriks Normalisasi</h4>`;
+    html += `<h5 class="mt-3 fw-bold">Matriks Normalisasi</h4>`;
     html += `<div class="table-responsive">${generateTable(AHP_DATA.normalizedMatrix, names)}</div>`;
 
-    html += `<h5 class="mt-5">Bobot Kriteria</h4><ul>`;
+    html += `<h5 class="mt-3 fw-bold">Bobot Kriteria</h4><ul>`;
     AHP_DATA.weights.forEach((w, i) => {
         html += `<li>${names[i]}: ${w.toFixed(4)}</li>`;
     });
     html += `</ul>`;
 
     html += `
-        <h5 class="mt-5">Konsistensi</h4>
+        <h5 class="fw-bold">Konsistensi</h4>
         <p><strong>λmax:</strong> ${AHP_DATA.lambdaMax}</p>
         <p><strong>CI:</strong> ${AHP_DATA.ci}</p>
         <p><strong>CR:</strong> ${AHP_DATA.cr}</p>

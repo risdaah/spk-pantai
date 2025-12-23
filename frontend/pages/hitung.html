@@ -185,19 +185,23 @@
             </section>
 
             <!-- Detail Modal -->
-            <div id="detailModal" class="modal">
-                <div class="modal-content">
-                    <span class="close" onclick="closeModal()">&times;</span>
-                    <h3 id="modalTitle"></h3>
-                    <div id="modalBody"></div>
+            <div id="detailModal" class="modal">                
+                <div class="modal-content">  
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="modalTitle"></h5>
+                        <button type="button" onclick="closeModal()" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>                  
+                    <div class="modal-body" id="modalBody"></div>
                 </div>
             </div>
 
-            <div id="ahpModal" class="modal mt-">
+            <div id="ahpModal" class="modal mt-4">
                 <div class="modal-content" style="max-width:900px">
-                    <span class="close" onclick="closeAHPModal()">&times;</span>
+                    <div class="modal-header bg-primary text-white">
                     <h3 class="fw-bold">Detail Perhitungan AHP</h3>
-                    <div id="ahpDetailBody"></div>
+                        <button type="button" onclick="closeAHPModal()" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div> 
+                    <div class="modal-body" id="ahpDetailBody"></div>
                 </div>
             </div>
 
