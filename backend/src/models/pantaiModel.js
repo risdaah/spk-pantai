@@ -17,9 +17,21 @@ class PantaiModel {
   }
 
   // Create new pantai
+  // Sebelumnya hanya namapantai, provinsi
   static async create(data) {
-    const query = 'INSERT INTO pantai (nama_pantai, provinsi) VALUES (?, ?)';
-    const [result] = await db.execute(query, [data.nama_pantai, data.provinsi]);
+    const query = `
+      INSERT INTO pantai (nama_pantai, provinsi, HTM, RRHM, KFU, KJ, RGM)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+    const result = await db.execute(query, [
+      data.namapantai,
+      data.provinsi,
+      data.HTM || null,
+      data.RRHM || null,
+      data.KFU || null,
+      data.KJ || null,
+      data.RGM || null,
+    ]);
     return result;
   }
 

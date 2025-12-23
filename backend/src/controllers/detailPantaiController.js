@@ -273,6 +273,25 @@ class DetailPantaiController {
       });
     }
   }
+
+  // Ringkasan pantai: HTM, RRHM, RGM dari pantai, KFU & KJ dari detail
+static async getSummary(req, res) {
+  try {
+    const data = await DetailPantaiModel.getPantaiWithDetailSummary();
+    return res.status(200).json({
+      success: true,
+      message: 'Data ringkasan pantai berhasil diambil',
+      data,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Terjadi kesalahan saat mengambil ringkasan pantai',
+      error: error.message,
+    });
+  }
+}
+
 }
 
 module.exports = DetailPantaiController;

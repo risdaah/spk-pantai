@@ -179,6 +179,126 @@ class PantaiController {
       });
     }
   }
+
+  // create versi full
+  // Tambah pantai baru + detail kriteria sekaligus
+  static async storeWithDetail(req, res) {
+    const {
+      namapantai,
+      provinsi,
+      HTM,
+      RRHM,
+      RGM,
+      fasilitasUmumIds,   // array idsubkriteria untuk kriteria 3
+      kondisiJalanIds,    // array idsubkriteria untuk kriteria 4
+      htmSubId,           // idsubkriteria untuk kriteria 1 (range HTM)
+      rrhmSubId,          // idsubkriteria untuk kriteria 2 (range RRHM)
+      ratingSubId         // idsubkriteria untuk kriteria 5 (range rating)
+    } = req.body;
+
+    try {
+      // Validasi basic
+      if (!namapantai || !provinsi) {
+        return res.status(400).json({
+          success: false,
+          message: 'Nama pantai dan provinsi harus diisi',
+        });
+      }
+
+      // 1) Insert ke tabel pantai
+      const pantaiResult = await PantaiModel.create({
+        namapantai,
+        provinsi,
+        HTM,
+        RRHM,
+        // teks gabungan KFU/KJ bisa kamu bentuk di frontend atau nanti di summary
+        KFU: null,
+        KJ: null,
+        RGM,
+      });
+
+      const idpantai = pantaiResult.insertId;
+
+      // 2) Insert detail_pantai berdasarkan idsubkriteria
+      const insertedDetailIds = [];
+
+      // Helper untuk insert 1 detail + upsert skor (pakai logic existing di DetailPantaiModel)
+      const insertDetailRange = async (idkriteria, idsubkriteria) => {
+        if (!idsubkriteria) return;
+
+        // hapus lama (harusnya belum ada untuk pantai baru, tapi aman)
+        await DetailPantaiModel.deleteByPantaiKriteria(idpantai, idkriteria);
+
+        const result = await DetailPantaiModel.create({
+          idpantai,
+          idkriteria,
+          idsubkriteria,
+        });
+        insertedDetailIds.push(result.insertId);
+
+        const sub = await DetailPantaiModel.getSubKriteriaInfo(idsubkriteria);
+        await DetailPantaiModel.upsertSkorPantai(
+          idpantai,
+          idkriteria,
+          sub.nilaiskor || 0
+        );
+      };
+
+      const insertDetailChecklist = async (idkriteria, idArray) => {
+        if (!idArray || !Array.isArray(idArray) || idArray.length === 0) return;
+
+        await DetailPantaiModel.deleteByPantaiKriteria(idpantai, idkriteria);
+
+        for (const sid of idArray) {
+          const result = await DetailPantaiModel.create({
+            idpantai,
+            idkriteria,
+            idsubkriteria: sid,
+          });
+          insertedDetailIds.push(result.insertId);
+        }
+
+        // hitung skor checklist (jumlah fasilitas) & upsert ke skorpantai
+        const score = await DetailPantaiModel.calculateScore(idpantai, idkriteria);
+        await DetailPantaiModel.upsertSkorPantai(idpantai, idkriteria, score);
+      };
+
+      // kriteria 1: HTM (range)
+      await insertDetailRange(1, htmSubId);
+
+      // kriteria 2: RRHM (range)
+      await insertDetailRange(2, rrhmSubId);
+
+      // kriteria 5: Rating Google Maps (range)
+      await insertDetailRange(5, ratingSubId);
+
+      // kriteria 3: Ketersediaan Fasilitas Umum (checklist, multi)
+      await insertDetailChecklist(3, fasilitasUmumIds);
+
+      // kriteria 4: Kondisi Jalan (checklist, multi)
+      await insertDetailChecklist(4, kondisiJalanIds);
+
+      return res.status(201).json({
+        success: true,
+        message: 'Pantai baru beserta detail kriteria berhasil ditambahkan',
+        data: {
+          idpantai,
+          namapantai,
+          provinsi,
+          HTM,
+          RRHM,
+          RGM,
+          insertedDetailIds,
+        },
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: 'Terjadi kesalahan saat menambahkan pantai baru dan detail',
+        error: error.message,
+      });
+    }
+  }
 }
 
 module.exports = PantaiController;

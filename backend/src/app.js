@@ -23,9 +23,11 @@ app.get('/', (req, res) => {
 // Import routes
 const spkRoutes = require('./routes/spkRoutes');
 const helperRoutes = require('./routes/helperRoutes');
+const pantaiRoutes = require('./routes/pantaiRoutes');
 const detailPantaiRoutes = require('./routes/detailPantaiRoutes');
 app.use('/api/spk', spkRoutes);
 app.use('/api/spk/data', helperRoutes);
+app.use('/api/spk/pantai', pantaiRoutes);
 app.use('/api/spk/detail-pantai', detailPantaiRoutes);
 
 module.exports = app;

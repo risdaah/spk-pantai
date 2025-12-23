@@ -4,6 +4,9 @@ const router = express.Router();
 const DetailPantaiController = require('../controllers/detailPantaiController');
 
 // Get all detail pantai
+// GET /api/spk/pantai-summary
+router.get('/summary', DetailPantaiController.getSummary);
+
 router.get('/', DetailPantaiController.index);
 
 // Get detail by pantai ID

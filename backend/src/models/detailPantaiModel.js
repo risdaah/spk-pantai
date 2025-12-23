@@ -200,6 +200,45 @@ class DetailPantaiModel {
     const [rows] = await db.execute(query, [id_pantai]);
     return rows;
   }
+
+  // Ambil ringkasan per pantai: HTM, RRHM, RGM dari pantai,
+// Fasilitas & Jalan dari detailpantai + subkriteria
+static async getPantaiWithDetailSummary() {
+  const query = `
+        SELECT
+      p.id_pantai,
+      p.nama_pantai,
+      p.provinsi,
+      p.HTM,
+      p.RRHM,
+      p.RGM,
+      GROUP_CONCAT(
+        CASE WHEN k.id_kriteria = 3 THEN sk.label END
+        ORDER BY sk.urutan SEPARATOR ', '
+      ) AS fasilitas_umum,
+      GROUP_CONCAT(
+        CASE WHEN k.id_kriteria = 4 THEN sk.label END
+        ORDER BY sk.urutan SEPARATOR ', '
+      ) AS kondisi_jalan
+    FROM pantai p
+    LEFT JOIN detail_pantai dp ON p.id_pantai = dp.id_pantai
+    LEFT JOIN kriteria k ON dp.id_kriteria = k.id_kriteria
+    LEFT JOIN sub_kriteria sk ON dp.id_sub_kriteria = sk.id_sub_kriteria
+    GROUP BY
+      p.id_pantai,
+      p.nama_pantai,
+      p.provinsi,
+      p.HTM,
+      p.RRHM,
+      p.RGM
+    ORDER BY p.id_pantai ASC
+  `;
+
+  const rows = await db.execute(query);
+  return rows;
 }
+
+}
+
 
 module.exports = DetailPantaiModel;
