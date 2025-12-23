@@ -5,55 +5,39 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Poppins', sans-serif;
     min-height: 100vh;
-    padding: 20px;
+    background-color: white;
+    padding-top: 70px;
 }
 
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: none;           
+    margin: 0;
     background: white;
-    border-radius: 15px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    overflow-x: visible;
-    overflow-y: auto;
+    border-radius: 0;          
+    box-shadow: none;
 }
 
-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 30px;
-    text-align: center;
+.navbar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 9999;
+    padding: 10px;
 }
 
-header h1 {
-    font-size: 2.5em;
-    margin-bottom: 10px;
-}
-
-header h2 {
-    font-size: 1.3em;
-    font-weight: normal;
-    margin-bottom: 5px;
-}
-
-header p {
-    font-size: 0.9em;
-    opacity: 0.9;
-}
-
-main {
-    padding: 30px;
+.nav-link.active {
+    color: #0d6efd !important;
+    font-weight: 600;
+    border-bottom: 2px solid #0d6efd;
 }
 
 .card {
-    background: #f8f9fa;
-    border-radius: 10px;
-    padding: 25px;
-    margin-bottom: 25px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    padding: 20px;
 }
 
 .card h3 {
@@ -95,11 +79,39 @@ main {
     padding: 15px;
     margin-bottom: 10px;
     border-radius: 8px;
-    border-left: 4px solid #667eea;
+    /* border-left: 4px solid #667eea; */
 }
 
 .kriteria-item strong {
     color: #667eea;
+}
+
+.kriteria-box {
+    background: #0d6efd;
+    border-radius: 30px;
+    padding: 60px 30px;
+}
+
+.kriteria-list {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    flex-wrap: wrap;
+}
+
+.kriteria-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background: #0d6efd;
+    color: white;
+    font-weight: 600;
+}
+
+.kriteria-item i {
+    font-size: 36px;
 }
 
 .badge {
@@ -118,6 +130,15 @@ main {
 .badge.cost {
     background: #f44336;
     color: white;
+}
+
+#destinasi .card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#destinasi .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
 }
 
 .comparison-row {
@@ -155,51 +176,6 @@ select {
 select:focus {
     outline: none;
     border-color: #667eea;
-}
-
-.btn-primary,
-.btn-secondary {
-    padding: 15px 40px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.1em;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s;
-    margin-top: 10px;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-}
-
-.btn-secondary {
-    background: #6c757d;
-    color: white;
-}
-
-.btn-secondary:hover {
-    background: #5a6268;
-}
-
-.btn-detail {
-    padding: 5px 15px;
-    background: #2196F3;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9em;
-}
-
-.btn-detail:hover {
-    background: #1976D2;
 }
 
 .subsection {
@@ -376,10 +352,23 @@ tbody tr:hover {
 }
 
 footer {
-    background: #333;
-    color: white;
-    text-align: center;
-    padding: 20px;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+}
+
+
+footer .card {
+    transition: transform 0.3s ease;
+}
+
+footer .card:hover {
+    transform: translateY(-5px);
+}
+
+.footer-custom {
+    width: 100%;
+    background-color: #0d6efd; /* biru */
 }
 
 @media (max-width: 768px) {
@@ -476,6 +465,17 @@ footer {
     }
 }
 
+.rating-section {
+    background: #ffffff;
+}
+
+#ratingForm {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 16px;
+}
+
+
 /* Rating Select Styles */
 .rating-row {
     background: white;
@@ -521,6 +521,13 @@ footer {
     animation: fadeIn 0.3s;
 }
 
+@media (min-width: 1200px) {
+    main {
+        padding: 40px 80px;
+    }
+}
+
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -540,4 +547,33 @@ table tfoot {
 
 table tfoot td {
     border-top: 2px solid #667eea;
+}
+
+/* SECTION Kriteria versi ringkas */
+.kriteria-simple {
+    background: #f8f9fa;
+}
+
+/* grid rapi & ukuran sama */
+.kriteria-inline {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+/* box kriteria seragam */
+.kriteria-inline .kriteria-item {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 14px;
+    padding: 14px 12px;
+    font-weight: 500;
+    font-size: 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    min-height: 56px;      /* ⬅️ tinggi sama */
 }
