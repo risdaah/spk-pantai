@@ -10,7 +10,6 @@ body {
   left: 0;
   width: 100%;
   z-index: 9999;
-
   background: #fff !important;
   box-shadow: 0 2px 10px rgba(0,0,0,.06);
 }
