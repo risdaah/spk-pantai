@@ -85,39 +85,59 @@ function generateRatingForm(kriteria) {
     const n = kriteria.length;
     let index = 0;
 
-    html += `<h4>Perbandingan Berpasangan AHP</h4>`;
-    html += `<p>Pilih tingkat kepentingan kriteria kiri dibanding kanan.</p>`;
+    html += `<h4 class="mb-3">Perbandingan Berpasangan AHP</h4>`;
+    html += `<p class="text-muted mb-4">
+        Geser slider untuk menentukan tingkat kepentingan
+        kriteria kiri terhadap kriteria kanan.
+    </p>`;
 
     for (let i = 0; i < n; i++) {
         for (let j = i + 1; j < n; j++) {
             html += `
                 <div class="rating-row">
-                    <div class="rating-label">
-                        <strong>${kriteria[i].nama_kriteria}</strong>
-                        <span style="margin: 0 12px;">vs</span>
-                        <strong>${kriteria[j].nama_kriteria}</strong>
+                    <div class="rating-label mb-2">
+                    <strong>${kriteria[i].nama_kriteria}</strong>
+                    <span class="mx-2 text-muted">vs</span>
+                    <strong>${kriteria[j].nama_kriteria}</strong>
                     </div>
-
                     <div class="rating-input">
-                        <select id="rating_${index}" class="rating-select">
-                            <option value="1">1 - Sama penting</option>
-                            <option value="2">2</option>
-                            <option value="3">3 - Sedikit lebih penting</option>
-                            <option value="4">4</option>
-                            <option value="5" selected>5 - Lebih penting</option>
-                            <option value="6">6</option>
-                            <option value="7">7 - Sangat penting</option>
-                            <option value="8">8</option>
-                            <option value="9">9 - Mutlak lebih penting</option>
-                        </select>
+                    <div class="slider-wrapper">
+                        <input type="range"
+                            min="1" max="9" step="1" value="1"
+                            id="rating_${index}"
+                            class="rating-slider"
+                            oninput="updateRatingValue(${index}, this)">
+                        <div class="rating-tooltip" id="value_${index}">1</div>
+                    </div>
                     </div>
                 </div>
-            `;
+                `;
             index++;
         }
     }
 
     container.innerHTML = html;
+}
+
+function updateRatingValue(index, inputEl) {
+  const tooltip = document.getElementById(`value_${index}`);
+  if (!tooltip) return;
+
+  const value = parseFloat(inputEl.value);
+  tooltip.textContent = value;
+
+  const min = inputEl.min ? parseFloat(inputEl.min) : 0;
+  const max = inputEl.max ? parseFloat(inputEl.max) : 100;
+  const percent = (value - min) / (max - min);
+
+  // posisi horizontal tooltip mengikuti knob
+  tooltip.style.left = `${percent * 100}%`;
+}
+
+function getAHPValue(index) {
+    return parseFloat(
+        document.getElementById(`rating_${index}`).value
+    );
 }
 
 /* =====================================================

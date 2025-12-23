@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Kriteria</title>
+    
+    <link rel="icon" href="../assets/img/Group 13.png">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">      
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/DataKriteria.css">
+
+    <!-- Bootstrap JS + Custom JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="../assets/js/DataKriteria.js" defer></script>
+</head>
+
+<body data-bs-spy="scroll"
+      data-bs-target=".navbar"
+      data-bs-offset="80"
+      tabindex="0">
+      
+        <div class="container-fluid p-0">
+             <nav class="navbar navbar-expand-lg navbar-light bg-white">
+                <div class="container navbar">
+                <a class="navbar-brand text-decoration-none mb-0 brandd text-primary" href="index.html">
+                    <img src="../assets/img/Group 15.png" alt="Logo" style="height:40px;">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">                    
+                    <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a href="hitung.html" class="btn text-decoration-none rounded-pill btn-primary mx-lg-2">
+                        Kembali
+                        </a>
+                    </li>
+                    </ul>
+                </div>
+                </div>
+            </nav>
+
+        <main class="py-4">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h1 class="h3 mb-1">Data Kriteria</h1>
+                        <p class="text-muted mb-0">
+                            Menampilkan informasi kriteria dari Pantai.
+                        </p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button id="refreshBtn" class="btn btn-outline-primary">
+                            🔄 Refresh Data
+                        </button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambahPantai">
+                            Tambah Kriteria
+                        </button>
+                    </div>
+                </div>
+
+                <div id="alertContainer"></div>
+
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div id="loading" class="text-center py-4">
+                            <div class="spinner-border text-primary mb-2" role="status"></div>
+                            <p class="text-muted mb-0">Memuat data pantai...</p>
+                        </div>
+
+                        <div id="error" class="alert alert-danger d-none"></div>
+
+                        <div class="table-responsive d-none" id="tableWrapper">
+                            <table class="table table-striped table-hover align-middle mb-0" id="pantaiTable">
+                                <thead class="table-primary">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Kriteria</th>
+                                    <th scope="col">Deskripsi</th>
+                                    <th scope="col" class="text-center">Aksi</th>
+                                </tr>
+                                </thead>
+                                <tbody id="tableBody"></tbody>
+                            </table>
+                            </div>
+
+
+                        <div id="totalData" class="mt-3 text-end text-muted small d-none"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+    <!-- Modal Tambah Pantai -->
+    <div class="modal fade" id="modalTambahPantai" tabindex="-1" aria-labelledby="modalTambahPantaiLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <form id="formTambahPantai">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTambahPantaiLabel">
+                            Tambah Pantai Baru
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="formError" class="alert alert-danger d-none"></div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nama Pantai</label>
+                                <input type="text" class="form-control" id="inputNamaPantai" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Provinsi</label>
+                                <select class="form-select" id="inputProvinsi" required>
+                                    <option value="">- Pilih Provinsi -</option>
+                                    <option value="Jawa Timur">Jawa Timur</option>
+                                    <option value="Jawa Tengah">Jawa Tengah</option>
+                                    <option value="Jawa Barat">Jawa Barat</option>
+                                </select>
+                            </div>
+
+
+                            <div class="col-md-4">
+                                <label class="form-label">Harga Tiket Masuk (HTM)</label>
+                                <input type="text" class="form-control" id="inputHTM" placeholder="Contoh: Rp15,000"
+                                    required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Rata-Rata Harga Makanan (RRHM)</label>
+                                <input type="text" class="form-control" id="inputRRHM" placeholder="Contoh: Rp25,000"
+                                    required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Rating Google Maps (RGM)</label>
+                                <input type="number" step="0.1" min="0" max="5" class="form-control" id="inputRGM"
+                                    placeholder="Contoh: 4.6" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    Ketersediaan Fasilitas Umum (Checklist)
+                                </label>
+                                <div id="checklistFasilitas" class="border rounded p-2"
+                                    style="max-height: 200px; overflow-y: auto;">
+                                    <!-- Checkbox dari JS (kriteria 3) -->
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    Kondisi Jalan (Checklist)
+                                </label>
+                                <div id="checklistJalan" class="border rounded p-2"
+                                    style="max-height: 200px; overflow-y: auto;">
+                                    <!-- Checkbox dari JS (kriteria 4) -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Batal
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="btnSimpanPantai">
+                            Simpan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

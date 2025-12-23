@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SPK Destinasi Pantai Jawa</title>
+    <title>Cari Pantai</title>
     <link rel="icon" href="../assets/img/Group 13.png">
 
     <!-- Icon -->
@@ -43,6 +43,25 @@
                     <li class="nav-item">
                         <a class="nav-link text-decoration-none" href="#ratingForm">Perhitungan</a>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-decoration-none" href="#" id="tambahDataDropdown"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Tambah Data
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="tambahDataDropdown">
+                            <li>
+                            <a class="dropdown-item" href="DataPantai.html">
+                                <span class="fas fa-table"></span> Data Pantai
+                            </a>
+                            </li>
+                            <li>
+                            <a class="dropdown-item" href="DataKriteria.html">
+                                <span class="fas fa-upload"></span> Data Kriteria
+                            </a>
+                            </li>
+                        </ul>
+                        </li>
+                  
                     </ul>
                     <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
@@ -65,12 +84,13 @@
                             <p class="text-muted">
                                 Kriteria yang digunakan dalam proses perhitungan AHP dan SAW
                             </p>
-                        </div>
-
-                        <div class="col-md-6">
                             <div id="kriteriaList" class="kriteria-inline">
                                 Memuat kriteria...
                             </div>
+                        </div>
+
+                        <div class="col-md-6 text-center">
+                            <img src="../assets/img/Group 13.png" class="img-fluid" style="max-height: 400px;">
                         </div>
 
                     </div>
@@ -79,82 +99,84 @@
 
 
             <!-- Step 2: Input Tingkat Kepentingan -->
-            <section class="card border-0 min-vh-100" id="ratingSection">
-                <h3>Tentukan Tingkat Kepentingan Kriteria</h3>
-                <p class="info">
-                    Berikan nilai kepentingan untuk setiap kriteria menggunakan skala AHP (1-9):
-                </p>
-                <ul class="scale-info">
-                    <li><strong>1</strong> = Tidak penting</li>
-                    <li><strong>3</strong> = Cukup penting</li>
-                    <li><strong>5</strong> = Penting</li>
-                    <li><strong>7</strong> = Sangat penting</li>
-                    <li><strong>9</strong> = Mutlak sangat penting</li>
-                    <li><em>Nilai 2, 4, 6, 8 = Nilai antara</em></li>
-                </ul>
-                <p class="warning">
-                    <strong>Catatan:</strong> Sistem akan otomatis membandingkan kriteria berdasarkan rating Anda dan
-                    menghitung bobot dengan metode AHP.
-                </p>
+            <section id="ratingSection" class="d-flex align-items-center min-vh-100 rating-section">
+                <div class="px-5">
+                    <div class="row align-items-start">
+                            <h2 class="fw-bold mb-3">
+                                Tentukan Tingkat Kepentingan Kriteria
+                            </h2>
 
-                <div id="ratingForm"></div>
+                            <p class="info">
+                                Berikan nilai kepentingan untuk setiap kriteria menggunakan skala AHP (1-9):
+                            </p>
 
-                <button id="hitungBtn" class="btn-primary" onclick="hitungRanking()">Hitung Ranking</button>
-            </section>
+                            <ul class="scale-info">
+                                <li><strong>1</strong> = Tidak penting</li>
+                                <li><strong>3</strong> = Cukup penting</li>
+                                <li><strong>5</strong> = Penting</li>
+                                <li><strong>7</strong> = Sangat penting</li>
+                                <li><strong>9</strong> = Mutlak sangat penting</li>
+                                <li><em>Nilai 2, 4, 6, 8 = Nilai antara</em></li>
+                            </ul>
 
-            <!-- Step 3: Hasil -->
-            <section id="hasilSection" class="min-vh-100 py-5" style="display:none;">
-                <div class="container-fluid px-5">
-                    <div class="row">
-                        <div class="col-12">
-
-                            <div class="card border-0 shadow-sm">
-                                <h3 class="mb-3">🏆 Top 5 Destinasi Pantai Terbaik</h3>
-
-                                <button class="btn btn-outline-primary mb-4"
-                                        onclick="showAHPDetail()">
-                                    Lihat Detail Perhitungan AHP
-                                </button>
-
-                                <!-- Info AHP -->
-                                <div id="ahpInfo" class="subsection"></div>
-
-                                <!-- Bobot -->
-                                <div class="subsection">
-                                    <h4>Bobot Kriteria (Hasil AHP)</h4>
-                                    <div id="bobotKriteria"></div>
-                                </div>
-
-                                <!-- Ranking -->
-                                <div class="subsection">
-                                    <h4>Ranking Pantai (Hasil SAW)</h4>
-                                    <div class="table-responsive">
-                                        <table id="rankingTable">
-                                            <thead>
-                                                <tr>
-                                                    <th>Rank</th>
-                                                    <th>Nama Pantai</th>
-                                                    <th>Provinsi</th>
-                                                    <th>Skor Akhir</th>
-                                                    <th>Aksi</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="rankingBody"></tbody>
-                                        </table>
-                                    </div>
-                                </div>
-
-                                <button class="btn btn-secondary mt-4"
-                                        onclick="resetForm()">
-                                    🔄 Hitung Ulang
-                                </button>
-                            </div>
-
+                            <p class="warning">
+                                <strong>Catatan:</strong> Sistem akan otomatis menghitung bobot kriteria menggunakan metode AHP.
+                            </p>
                         </div>
+
+                            <div id="ratingForm" class="mb-4"></div>
+
+                            <button
+                                id="hitungBtn"
+                                onclick="hitungRanking()"
+                                class="btn btn-primary rounded-pill px-4">
+                                Hitung Ranking
+                            </button>
                     </div>
                 </div>
             </section>
 
+            <!-- Step 3: Hasil -->
+            <section id="hasilSection" class="min-vh-100" style="display:none;">
+                <div class="container-fluid px-5">
+
+                    <h3 class="mb-4">🏆 Top 5 Destinasi Pantai Terbaik</h3>
+
+                    <button class="btn btn-secondary mb-3" onclick="showAHPDetail()">
+                        Lihat Detail Perhitungan AHP
+                    </button>
+
+                    <div id="ahpInfo" class="subsection"></div>
+
+                    <div class="subsection">
+                        <h4>Bobot Kriteria (Hasil AHP)</h4>
+                        <div id="bobotKriteria"></div>
+                    </div>
+
+                    <div class="subsection">
+                        <h4>Ranking Pantai (Hasil SAW)</h4>
+                        <div class="table-responsive">
+                            <table id="rankingTable">
+                                <thead>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Nama Pantai</th>
+                                        <th>Provinsi</th>
+                                        <th>Skor Akhir</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rankingBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-secondary mt-3 mb-5" onclick="resetForm()">
+                        🔄 Hitung Ulang
+                    </button>
+
+                </div>
+            </section>
 
             <!-- Detail Modal -->
             <div id="detailModal" class="modal">
