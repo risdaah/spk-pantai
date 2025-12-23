@@ -7,9 +7,9 @@
     <title>Cari Pantai</title>
     <link rel="icon" href="../assets/img/Group 13.png">
 
-    <!-- Icon -->
-    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/solid.css">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -124,13 +124,14 @@
                             </p>
                         </div>
 
-                            <div id="ratingForm" class="mb-4"></div>
+                            <div id="ratingForm" class="mb-4">                              
+                            </div>
 
                             <button
                                 id="hitungBtn"
                                 onclick="hitungRanking()"
                                 class="btn btn-primary rounded-pill px-4">
-                                Hitung Ranking
+                                <i class="bi bi-calculator mx-1"></i>Hitung Ranking
                             </button>
                     </div>
                 </div>
@@ -140,40 +141,45 @@
             <section id="hasilSection" class="min-vh-100" style="display:none;">
                 <div class="container-fluid px-5">
 
-                    <h3 class="mb-4">🏆 Top 5 Destinasi Pantai Terbaik</h3>
+                    <h3 class="mt-5 mb-4 fw-bold">🏆 Top 5 Destinasi Pantai Terbaik</h3>
 
-                    <button class="btn btn-secondary mb-3" onclick="showAHPDetail()">
+                    <button class="btn btn-primary rounded-pill mb-3" onclick="showAHPDetail()">
                         Lihat Detail Perhitungan AHP
                     </button>
 
                     <div id="ahpInfo" class="subsection"></div>
 
                     <div class="subsection">
-                        <h4>Bobot Kriteria (Hasil AHP)</h4>
+                        <h4 class="fw-bold">Bobot Kriteria (Hasil AHP)</h4>
                         <div id="bobotKriteria"></div>
                     </div>
 
                     <div class="subsection">
-                        <h4>Ranking Pantai (Hasil SAW)</h4>
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                            <h4 class="fw-bold mb-0">Ranking Pantai (Hasil SAW)</h4>
+
+                            <button class="btn btn-primary rounded-pill" onclick="resetForm()">
+                            <i class="bi bi-arrow-counterclockwise mx-1"></i>Hitung Ulang
+                            </button>
+                        </div>
+
                         <div class="table-responsive">
                             <table id="rankingTable">
-                                <thead>
-                                    <tr>
-                                        <th>Rank</th>
-                                        <th>Nama Pantai</th>
-                                        <th>Provinsi</th>
-                                        <th>Skor Akhir</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="rankingBody"></tbody>
+                            <thead>
+                                <tr>
+                                <th>Rank</th>
+                                <th>Nama Pantai</th>
+                                <th>Provinsi</th>
+                                <th>Skor Akhir</th>
+                                <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rankingBody"></tbody>
                             </table>
-                        </div>
-                    </div>
 
-                    <button class="btn btn-secondary mt-3 mb-5" onclick="resetForm()">
-                        🔄 Hitung Ulang
-                    </button>
+                            <div id="rankingCards" class="ranking-cards"></div>
+                        </div>
+                        </div>                    
 
                 </div>
             </section>
@@ -187,10 +193,10 @@
                 </div>
             </div>
 
-            <div id="ahpModal" class="modal">
+            <div id="ahpModal" class="modal mt-">
                 <div class="modal-content" style="max-width:900px">
                     <span class="close" onclick="closeAHPModal()">&times;</span>
-                    <h3>Detail Perhitungan AHP</h3>
+                    <h3 class="fw-bold">Detail Perhitungan AHP</h3>
                     <div id="ahpDetailBody"></div>
                 </div>
             </div>

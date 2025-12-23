@@ -85,33 +85,30 @@ function generateRatingForm(kriteria) {
     const n = kriteria.length;
     let index = 0;
 
-    html += `<h4 class="mb-3">Perbandingan Berpasangan AHP</h4>`;
-    html += `<p class="text-muted mb-4">
-        Geser slider untuk menentukan tingkat kepentingan
-        kriteria kiri terhadap kriteria kanan.
-    </p>`;
+    html += `<h4>Perbandingan Berpasangan AHP</h4>`;
+    html += `<p>Pilih tingkat kepentingan kriteria kiri dibanding kanan.</p>`;
 
     for (let i = 0; i < n; i++) {
         for (let j = i + 1; j < n; j++) {
             html += `
                 <div class="rating-row">
-                    <div class="rating-label mb-2">
-                    <strong>${kriteria[i].nama_kriteria}</strong>
-                    <span class="mx-2 text-muted">vs</span>
-                    <strong>${kriteria[j].nama_kriteria}</strong>
-                    </div>
-                    <div class="rating-input">
+                <div class="rating-col rating-left"><strong>${kriteria[i].nama_kriteria}</strong></div>
+
+                <div class="rating-col rating-mid">
                     <div class="slider-wrapper">
-                        <input type="range"
-                            min="1" max="9" step="1" value="1"
-                            id="rating_${index}"
-                            class="rating-slider"
-                            oninput="updateRatingValue(${index}, this)">
-                        <div class="rating-tooltip" id="value_${index}">1</div>
-                    </div>
+                    <input type="range"
+                        min="1" max="9" step="1" value="1"
+                        id="rating_${index}"
+                        class="rating-slider"
+                        oninput="updateRatingValue(${index}, this)">
+                    <div class="rating-tooltip" id="value_${index}">1</div>
                     </div>
                 </div>
-                `;
+
+                <div class="rating-col rating-right"><strong>${kriteria[j].nama_kriteria}</strong></div>
+                </div>
+            `;
+
             index++;
         }
     }
@@ -134,11 +131,6 @@ function updateRatingValue(index, inputEl) {
   tooltip.style.left = `${percent * 100}%`;
 }
 
-function getAHPValue(index) {
-    return parseFloat(
-        document.getElementById(`rating_${index}`).value
-    );
-}
 
 /* =====================================================
  * 4. HITUNG RANKING (KIRIM KE BACKEND)
@@ -148,40 +140,50 @@ async function hitungRanking() {
     btn.disabled = true;
     btn.textContent = "⏳ Menghitung...";
 
+
     try {
         const comparisons = [];
         const n = kriteriaData.length;
         const expected = (n * (n - 1)) / 2;
+
 
         for (let i = 0; i < expected; i++) {
             const el = document.getElementById(`rating_${i}`);
             comparisons.push(parseFloat(el.value));
         }
 
+
         const response = await API.hitungRanking(comparisons);
         console.log("BACKEND RESPONSE:", response);
+
 
         if (!response.success) {
             return showError(response.message || "Perhitungan gagal");
         }
 
+
         if (!Array.isArray(response.ranking)) {
             return showError("Ranking tidak ditemukan dari backend");
         }
 
+
         hasilData = response;        // Simpan semua
         AHP_DATA = response.ahp;     // Simpan AHP
 
+
         displayHasil(response);
+
 
         document.getElementById("hasilSection")
             .scrollIntoView({ behavior: "smooth" });
+
 
     } catch (err) {
         showError("Error: " + err.message);
     } finally {
         btn.disabled = false;
-        btn.textContent = "🧮 Hitung Ranking";
+        btn.innerHTML = `<i class="bi bi-calculator mx-1"></i> Hitung Ranking`;
+
     }
 }
 
@@ -230,30 +232,45 @@ function displayBobotKriteria(kriteria) {
 }
 
 /* Ranking Table */
+
 function displayRankingTable(ranking) {
-    const tbody = document.getElementById("rankingBody");
-    let html = "";
+  const cardsContainer = document.getElementById("rankingCards");
+  if (!cardsContainer) return;
 
-    ranking.forEach(item => {
-        const rankClass = item.rank <= 3 ? `rank-${item.rank}` : "rank-other";
+  let html = "";
 
-        html += `
-            <tr>
-                <td><span class="rank-badge ${rankClass}">${item.rank}</span></td>
-                <td><strong>${item.nama_pantai}</strong></td>
-                <td>${item.provinsi}</td>
-                <td>${item.finalScore.toFixed(4)}</td>
-                <td>
-                    <button class="btn-detail" onclick="showDetail(${item.id_pantai})">
-                        📊 Detail
-                    </button>
-                </td>
-            </tr>
-        `;
-    });
+  ranking.forEach(item => {
+    const rankClass = item.rank <= 3 ? `rank-${item.rank}` : "rank-other";
 
-    tbody.innerHTML = html;
+    html += `
+      <div class="rank-card">
+        <div class="rank-card-header">
+          <span class="rank-badge ${rankClass}">${item.rank}</span>
+          <div class="rank-card-title">
+            <div class="nama"><strong>${item.nama_pantai}</strong></div>
+            <div class="provinsi text-muted">${item.provinsi}</div>
+          </div>
+        </div>
+
+        <div class="rank-card-body">
+          <div class="score-row">
+            <span class="text-muted">Skor Akhir</span>
+            <span class="score">${item.finalScore.toFixed(4)}</span>
+          </div>
+
+          <button class="btn-detail btn-secondary rounded-pill"
+                  onclick="showDetail(${item.id_pantai})">
+            Detail
+          </button>
+        </div>
+      </div>
+    `;
+  });
+
+  cardsContainer.innerHTML = html;
 }
+
+
 
 /* =====================================================
  * 6. MODAL DETAIL SAW
@@ -320,20 +337,20 @@ function showAHPDetail() {
     const names = hasilData.kriteria.map(k => k.nama_kriteria);
     let html = "";
 
-    html += `<h4>Matriks Perbandingan Berpasangan</h4>`;
+    html += `<h5 class="fw-normal">Matriks Perbandingan Berpasangan</h4>`;
     html += `<div class="table-responsive">${generateTable(AHP_DATA.pairwiseMatrix, names)}</div>`;
 
-    html += `<h4>Matriks Normalisasi</h4>`;
+    html += `<h5 class="mt-5">Matriks Normalisasi</h4>`;
     html += `<div class="table-responsive">${generateTable(AHP_DATA.normalizedMatrix, names)}</div>`;
 
-    html += `<h4>Bobot Kriteria</h4><ul>`;
+    html += `<h5 class="mt-5">Bobot Kriteria</h4><ul>`;
     AHP_DATA.weights.forEach((w, i) => {
         html += `<li>${names[i]}: ${w.toFixed(4)}</li>`;
     });
     html += `</ul>`;
 
     html += `
-        <h4>Konsistensi</h4>
+        <h5 class="mt-5">Konsistensi</h4>
         <p><strong>λmax:</strong> ${AHP_DATA.lambdaMax}</p>
         <p><strong>CI:</strong> ${AHP_DATA.ci}</p>
         <p><strong>CR:</strong> ${AHP_DATA.cr}</p>
