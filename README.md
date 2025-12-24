@@ -1,6 +1,8 @@
 # 🌊 Wavercision - Sistem Pendukung Keputusan Destinasi Pantai Terbaik di Pulau Jawa, Indonesia
 
 **Wavercision** adalah aplikasi web Sistem Pendukung Keputusan (SPK) yang membantu wisatawan menemukan destinasi pantai terbaik di Pulau Jawa berdasarkan preferensi pribadi menggunakan metode **AHP (Analytical Hierarchy Process)** dan **SAW (Simple Additive Weighting)**.
+<img width="2400" height="1140" alt="image" src="https://github.com/user-attachments/assets/2e783540-9799-45bc-8f07-ae9c6edbf4fa" />
+
 
 ## 🎯 Fitur Utama
 
