@@ -13,10 +13,10 @@ body {
 
 .container {
     width: 100%;
-    max-width: none;           
+    max-width: none;
     margin: 0;
     background: white;
-    border-radius: 0;          
+    border-radius: 0;
     box-shadow: none;
 }
 
@@ -138,7 +138,7 @@ body {
 
 #destinasi .card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 .comparison-row {
@@ -210,11 +210,11 @@ select:focus {
 }
 
 .table-responsive {
-  background: transparent;
-  border-radius: 0;
-  box-shadow: none;
-  padding: 0;
-  overflow: hidden;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    overflow: hidden;
 }
 
 table {
@@ -300,7 +300,7 @@ tbody tr:hover {
     overflow-y: auto;
 }
 
-.modal-body{
+.modal-body {
     padding: 20px;
 }
 
@@ -374,7 +374,8 @@ footer .card:hover {
 
 .footer-custom {
     width: 100%;
-    background-color: #0d6efd; /* biru */
+    background-color: #0d6efd;
+    /* biru */
 }
 
 @media (max-width: 768px) {
@@ -398,69 +399,71 @@ footer .card:hover {
 
 /* Star Rating Styles */
 /* Sembunyikan tabel jika mau pakai card saja */
-#rankingTable { display: none; }
-
-.ranking-cards{
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
-  margin-top: 16px;
+#rankingTable {
+    display: none;
 }
 
-.rank-card{
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+.ranking-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
 }
 
-.rank-card-header{
-  display: flex;
-  gap: 12px;
-  align-items: center;
+.rank-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
 }
 
-.rank-card-title .nama{
-  font-size: 1rem;
+.rank-card-header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
 }
 
-.rank-card-title .provinsi{
-  font-size: 0.9rem;
+.rank-card-title .nama {
+    font-size: 1rem;
 }
 
-.rank-card-body{
-  margin-top: 12px;
-  display: grid;
-  gap: 12px;
+.rank-card-title .provinsi {
+    font-size: 0.9rem;
 }
 
-.score-row{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.rank-card-body {
+    margin-top: 12px;
+    display: grid;
+    gap: 12px;
 }
 
-.score{
-  font-weight: 700;
-  color: #667eea;
+.score-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.score {
+    font-weight: 700;
+    color: #667eea;
 }
 
 .rating-tooltip {
-  position: absolute;
-  top: -20px;      
-  padding: 2px 8px;     
-  color: #0d6efd;
-  border-radius: 12px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  pointer-events: none;
+    position: absolute;
+    top: -20px;
+    padding: 2px 8px;
+    color: #0d6efd;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    pointer-events: none;
 }
 
 .rating-slider {
-  width: 100%;
-  accent-color: #0d6efd;
-  cursor: pointer;
+    width: 100%;
+    accent-color: #0d6efd;
+    cursor: pointer;
 }
 
 .star-rating {
@@ -596,117 +599,120 @@ table tfoot td {
 }
 
 .rating-input {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 .slider-wrapper {
-  position: relative;
-  width: 100%;
+    position: relative;
+    width: 100%;
 }
 
-.rating-row{
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 14px 0;
+.rating-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 14px 0;
 }
 
-.rating-col{
-  flex: 1;
+.rating-col {
+    flex: 1;
 }
 
-.rating-left{
-  text-align: left;
+.rating-left {
+    text-align: left;
 }
 
-.rating-right{
-  text-align: right;
+.rating-right {
+    text-align: right;
 }
 
-.rating-mid{
-  flex: 2;                 /* bagian tengah lebih lebar */
-  display: flex;
-  justify-content: center; /* pusatkan slider */
+.rating-mid {
+    flex: 2;
+    /* bagian tengah lebih lebar */
+    display: flex;
+    justify-content: center;
+    /* pusatkan slider */
 }
 
-.slider-wrapper{
-  position: relative;
-  width: min(520px, 100%); /* lebar slider konsisten, tetap responsif */
+.slider-wrapper {
+    position: relative;
+    width: min(520px, 100%);
+    /* lebar slider konsisten, tetap responsif */
 }
 
-.rating-slider{
-  width: 100%;
+.rating-slider {
+    width: 100%;
 }
 
 
 
 .table-responsive {
-  max-height: 70vh;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-  padding: 12px;
+    max-height: 70vh;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    padding: 12px;
 }
 
 .table {
-  border-collapse: separate;
-  border-spacing: 0;
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
 .table thead th {
-  background: linear-gradient(135deg, #4f46e5, #6366f1);
-  color: #fff;
-  border-bottom: none;
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    color: #fff;
+    border-bottom: none;
 }
 
 .table tbody tr:nth-child(even) {
-  background-color: #f9fafb;
+    background-color: #f9fafb;
 }
 
 .table tbody tr:hover {
-  background-color: #eef2ff;
+    background-color: #eef2ff;
 }
 
 .table td,
 .table th {
-  font-size: 0.9rem;
-  vertical-align: middle;
+    font-size: 0.9rem;
+    vertical-align: middle;
 }
 
 .table td:first-child,
 .table th:first-child {
-  border-top-left-radius: 8px;
+    border-top-left-radius: 8px;
 }
 
 .table td:last-child,
 .table th:last-child {
-  border-top-right-radius: 8px;
+    border-top-right-radius: 8px;
 }
 
 .table .btn.btn-sm {
-  padding: 4px 8px;
-  border-radius: 999px;
+    padding: 4px 8px;
+    border-radius: 999px;
 }
 
 .table .btn-outline-primary i {
-  font-size: 0.9rem;
+    font-size: 0.9rem;
 }
 
 .table .btn-outline-danger i {
-  font-size: 0.9rem;
+    font-size: 0.9rem;
 }
 
 /* Small screen tweak */
 @media (max-width: 768px) {
-  .table-responsive {
-    max-height: none;
-    padding: 8px;
-  }
+    .table-responsive {
+        max-height: none;
+        padding: 8px;
+    }
 
-  .table td,
-  .table th {
-    font-size: 0.8rem;
-  }
+    .table td,
+    .table th {
+        font-size: 0.8rem;
+    }
 }
 
 /* SECTION Kriteria */
@@ -735,5 +741,6 @@ table tfoot td {
     justify-content: center;
     text-align: center;
 
-    min-height: 56px;      /* ⬅️ tinggi sama */
+    min-height: 56px;
+    /* ⬅️ tinggi sama */
 }
